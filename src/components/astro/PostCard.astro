@@ -43,18 +43,18 @@ const { post } = Astro.props;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    /* 圆角 10px + 1px 金色半透明内描边 + 半透明背景模糊（AGENT.md 5.4） */
     border-radius: 10px;
     border: 1px solid var(--border);
     background: var(--bg-card);
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
-    transition: transform 300ms ease-out, box-shadow 300ms ease-out,
-      border-color 300ms ease-out;
   }
-  /* hover 上浮 2px + 金色光晕（AGENT.md 5.4） */
+  /* hover 上浮 2px + 金色光晕扩散 */
   .post-card:hover {
     transform: translateY(-2px);
     border-color: var(--accent);
-    box-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
+    box-shadow: 0 0 22px rgba(212, 175, 55, 0.28);
   }
   .post-card-cover-link {
     display: block;
@@ -65,13 +65,20 @@ const { post } = Astro.props;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 400ms ease-out;
+  }
+  .post-card:hover .post-card-cover {
+    transform: scale(1.03);
   }
   .post-card-body {
-    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 1.2rem 1.4rem;
   }
   .post-card-title {
     margin: 0 0 0.5rem;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
   }
   .post-card-title a {
     color: var(--text-primary);
@@ -82,7 +89,7 @@ const { post } = Astro.props;
   }
   .post-card-excerpt {
     margin: 0 0 0.75rem;
-    font-size: 0.925rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -90,9 +97,9 @@ const { post } = Astro.props;
     overflow: hidden;
   }
   .post-card-meta {
+    margin-top: auto;
     display: flex;
     gap: 1rem;
-    font-family: var(--font-serif);
     font-size: 0.8rem;
     color: var(--text-secondary);
   }

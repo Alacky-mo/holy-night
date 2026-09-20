@@ -12,15 +12,24 @@
   --bg-page: #0f1424;
   --bg-page-end: #1a1428;
   --bg-card: rgba(20, 27, 48, 0.7);
+  --bg-card-solid: #141b30;
   --accent: #d4af37;
   --accent-warm: #e9c76b;
   --text-primary: #e0e2eb;
   --text-secondary: #8a90a8;
   --border: rgba(212, 175, 55, 0.3);
 
+  /* 代码块：深色背景 + 金色竖条（双主题统一） */
+  --code-bg: #141a2a;
+  --code-border: rgba(212, 175, 55, 0.35);
+
   /* 排版字体栈（AGENT.md 5.3） */
   --font-serif: 'Noto Serif SC', 'Playfair Display', 'Songti SC', 'SimSun', serif;
   --font-sans: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  /* 毛玻璃 */
+  --blur-card: 8px;
+  --blur-nav: 12px;
 
   color-scheme: dark;
 }
@@ -30,11 +39,15 @@ html.light {
   --bg-page: #f5f1e8;
   --bg-page-end: #f5f1e8;
   --bg-card: #ffffff;
+  --bg-card-solid: #ffffff;
   --accent: #b8860b;
   --accent-warm: #b8860b;
   --text-primary: #2d2a24;
   --text-secondary: #7a7265;
   --border: rgba(184, 134, 11, 0.2);
+
+  --code-bg: #141a2a;
+  --code-border: rgba(212, 175, 55, 0.35);
 
   color-scheme: light;
 }
@@ -53,9 +66,12 @@ html {
 
 body {
   min-height: 100vh;
+  margin: 0;
+  /* 主题切换 400ms 过渡（AGENT.md 5.4 / 阶段 2） */
+  transition: background-color 400ms ease-out, color 400ms ease-out;
 }
 
-/* 标题一律衬线体（DONT_DO #6：禁止粗黑无衬线标题） */
+/* 标题一律衬线体（DONT_DO #6：禁止粗黑无衬线标题），轻微金色文字阴影 */
 h1,
 h2,
 h3,
@@ -66,6 +82,22 @@ h6 {
   font-weight: 500;
   color: var(--text-primary);
   line-height: 1.35;
+  text-shadow: 0 0 18px rgba(212, 175, 55, 0.12);
+}
+
+/* 标签 / 时间 / 页码统一小号衬线（AGENT.md 5.3） */
+time,
+.post-meta,
+.post-tags,
+.pagination,
+.post-card-meta,
+.archive-date,
+.archive-category {
+  font-family: var(--font-serif);
+}
+
+a {
+  color: var(--accent);
 }
 
 /* 内容区：最大宽度 1200px，居中，两侧留白（DONT_DO #8） */
@@ -75,7 +107,7 @@ h6 {
   padding-inline: 1.5rem;
 }
 
-/* 文章卡片网格（阶段 1 最简，阶段 2 精修） */
+/* 文章卡片网格 */
 .post-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -88,8 +120,22 @@ h6 {
 
 /* 全局默认过渡：200–400ms、ease-out，克制优雅（AGENT.md 5.4 / DONT_DO #7） */
 a,
-button {
+button,
+.post-card,
+.theme-toggle,
+.navbar,
+.pagination-link {
   transition: color 300ms ease-out, border-color 300ms ease-out,
     background-color 300ms ease-out, box-shadow 300ms ease-out,
     transform 300ms ease-out;
+}
+
+/* 尊重系统的减少动效偏好 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

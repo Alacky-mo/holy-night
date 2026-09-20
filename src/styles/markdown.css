@@ -1,10 +1,10 @@
 /* ============================================================
-   markdown.css —— Notion 块渲染样式（.notion-body）
-   阶段 1：保证正文可读的最简样式；阶段 2 随视觉主题精修
+   markdown.css —— Notion 正文块渲染样式（.notion-body）
+   魔法使之夜 · 金色典籍风格（AGENT.md 第五节）
    ============================================================ */
 
 .notion-body {
-  font-size: 1rem;
+  font-size: 1.02rem;
   line-height: 1.8;
   color: var(--text-primary);
 }
@@ -13,79 +13,124 @@
   margin-top: 0;
 }
 
+/* ---------- 标题：衬线 + 轻微金色阴影 ---------- */
 .notion-body h1,
 .notion-body h2,
 .notion-body h3 {
   margin: 2em 0 0.8em;
+  font-weight: 500;
   line-height: 1.35;
+  text-shadow: 0 0 18px rgba(212, 175, 55, 0.12);
+  scroll-margin-top: 5rem;
 }
 .notion-body h1 {
-  font-size: 1.6rem;
+  font-size: 1.65rem;
+  padding-bottom: 0.4em;
+  border-bottom: 1px solid var(--border);
 }
 .notion-body h2 {
-  font-size: 1.35rem;
+  font-size: 1.38rem;
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--accent);
 }
 .notion-body h3 {
-  font-size: 1.15rem;
+  font-size: 1.18rem;
+  color: var(--accent-warm);
 }
 
+/* ---------- 段落 ---------- */
 .notion-body p {
-  margin: 0 0 1em;
+  margin: 0 0 1.1em;
 }
 
+/* ---------- 列表 ---------- */
 .notion-body ul,
 .notion-body ol {
-  margin: 0 0 1em;
+  margin: 0 0 1.1em;
   padding-left: 1.6em;
 }
 .notion-body li {
-  margin: 0.3em 0;
+  margin: 0.35em 0;
+}
+.notion-body li::marker {
+  color: var(--accent);
 }
 .notion-body li > ul,
 .notion-body li > ol {
-  margin: 0.3em 0;
+  margin: 0.35em 0;
 }
 
+/* ---------- 引用：3px 金色竖线 + 浅金文字 ---------- */
 .notion-body blockquote {
-  margin: 0 0 1em;
-  padding: 0.5em 1.2em;
+  margin: 0 0 1.2em;
+  padding: 0.6em 1.2em;
   border-left: 3px solid var(--accent);
-  color: var(--text-secondary);
-  background: rgba(212, 175, 55, 0.06);
+  border-radius: 0 6px 6px 0;
+  color: var(--accent-warm);
+  background: linear-gradient(
+    90deg,
+    rgba(212, 175, 55, 0.1),
+    rgba(212, 175, 55, 0.02)
+  );
 }
 .notion-body blockquote p:last-child {
   margin-bottom: 0;
 }
+.notion-body .notion-callout {
+  border-radius: 6px;
+  background: rgba(212, 175, 55, 0.08);
+}
 
+/* ---------- 行内代码 ---------- */
 .notion-body code {
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-  font-size: 0.9em;
+  font-family: ui-monospace, SFMono-Regular, Consolas, 'Courier New', monospace;
+  font-size: 0.88em;
   padding: 0.15em 0.4em;
   border-radius: 4px;
   border: 1px solid var(--border);
-  background: rgba(128, 128, 128, 0.12);
+  background: rgba(128, 128, 128, 0.14);
 }
+
+/* ---------- 代码块：深色背景 + 左侧金色竖条 ---------- */
 .notion-body pre {
-  margin: 0 0 1.2em;
-  padding: 1em 1.2em;
+  position: relative;
+  margin: 0 0 1.4em;
+  padding: 1em 1.2em 1em 1.4em;
   overflow-x: auto;
-  border: 1px solid var(--border);
+  border: 1px solid var(--code-border);
   border-radius: 8px;
+  background: var(--code-bg);
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.25);
+}
+.notion-body pre::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  bottom: 0.6em;
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-warm));
 }
 .notion-body pre code {
   padding: 0;
   border: none;
   background: none;
+  color: #e0e2eb;
+  font-size: 0.9em;
+  line-height: 1.7;
 }
 
+/* ---------- 图片 ---------- */
 .notion-body figure {
-  margin: 0 0 1.4em;
+  margin: 0 0 1.5em;
 }
 .notion-body img {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
   border: 1px solid var(--border);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.28);
 }
 .notion-body figcaption {
   margin-top: 0.5em;
@@ -95,42 +140,73 @@
   color: var(--text-secondary);
 }
 
+/* ---------- 分割线 ---------- */
 .notion-body hr {
-  margin: 2em 0;
+  margin: 2.2em 0;
   border: none;
-  border-top: 1px solid var(--border);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--accent) 50%,
+    transparent 100%
+  );
+  opacity: 0.5;
 }
 
+/* ---------- 表格 ---------- */
 .notion-body table {
   width: 100%;
   margin-bottom: 1.4em;
   border-collapse: collapse;
   font-size: 0.92rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
 }
 .notion-body th,
 .notion-body td {
-  padding: 0.5em 0.8em;
-  border: 1px solid var(--border);
+  padding: 0.55em 0.9em;
+  border-bottom: 1px solid var(--border);
   text-align: left;
 }
 .notion-body th {
   font-family: var(--font-serif);
+  font-weight: 500;
   color: var(--accent);
+  background: rgba(212, 175, 55, 0.08);
+}
+.notion-body tr:last-child td {
+  border-bottom: none;
 }
 
+/* ---------- 链接 ---------- */
 .notion-body a {
   color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
 }
 .notion-body a:hover {
   color: var(--accent-warm);
+  border-bottom-color: var(--accent-warm);
 }
 
+/* ---------- 回退块 ---------- */
 .notion-body .notion-todo {
   display: flex;
   align-items: flex-start;
   gap: 0.5em;
+  list-style: none;
+}
+.notion-body .notion-todo input {
+  margin-top: 0.5em;
+  accent-color: var(--accent);
 }
 .notion-body .notion-toggle summary {
   cursor: pointer;
   color: var(--accent);
+  font-family: var(--font-serif);
+}
+.notion-body .notion-bookmark a {
+  word-break: break-all;
 }

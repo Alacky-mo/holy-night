@@ -5,7 +5,7 @@ import Pagination from '../components/astro/Pagination.astro';
 import PaginationSync from '../components/vue/PaginationSync.vue';
 import { getAllPublishedPosts } from '../lib/notion';
 
-// 阶段 1：构建时拉取全部已发布文章，按 10 篇/页切分为页段
+// 构建时拉取全部已发布文章，按 10 篇/页切分为页段
 const PAGE_SIZE = 10;
 const allPosts = await getAllPublishedPosts();
 const pageCount = Math.max(1, Math.ceil(allPosts.length / PAGE_SIZE));
@@ -16,8 +16,10 @@ const pages = Array.from({ length: pageCount }, (_, i) =>
 
 <BaseLayout title="Holy Night · 首页">
   <main class="content">
-    <h1>Holy Night</h1>
-    <p class="home-subtitle">个人内容创作博客 · 杂文 / 书评 / 影评</p>
+    <header class="home-hero">
+      <h1>Holy Night</h1>
+      <p class="home-subtitle">个人内容创作博客 · 杂文 / 书评 / 影评</p>
+    </header>
 
     {
       allPosts.length === 0 ? (
@@ -42,7 +44,18 @@ const pages = Array.from({ length: pageCount }, (_, i) =>
 </BaseLayout>
 
 <style>
+  .home-hero {
+    margin: 2rem 0 0.5rem;
+  }
+  .home-hero h1 {
+    margin: 0 0 0.4rem;
+    font-size: 2.2rem;
+    letter-spacing: 0.04em;
+  }
   .home-subtitle {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
     color: var(--text-secondary);
   }
   .home-empty {

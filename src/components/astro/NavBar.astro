@@ -26,13 +26,27 @@ const links = [
 </nav>
 
 <style>
+  /* 顶部窄条：毛玻璃背景 */
   .navbar {
     position: sticky;
     top: 0;
     z-index: 10;
     background: var(--bg-card);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+  /* 底部 1px 金色渐变分割线 */
+  .navbar::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--accent) 50%,
+      transparent 100%
+    );
+    opacity: 0.6;
   }
   .navbar-inner {
     display: flex;
@@ -40,14 +54,16 @@ const links = [
     justify-content: space-between;
     max-width: 1200px;
     margin-inline: auto;
-    padding: 0.75rem 1.5rem;
+    padding: 0.6rem 1.5rem;
   }
   .navbar-brand {
     font-family: var(--font-serif);
     font-size: 1.15rem;
+    font-weight: 500;
     color: var(--accent);
     text-decoration: none;
     letter-spacing: 0.08em;
+    text-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
   }
   .navbar-right {
     display: flex;
@@ -59,11 +75,27 @@ const links = [
     gap: 1.25rem;
   }
   .navbar-link {
+    font-family: var(--font-serif);
     font-size: 0.9rem;
     color: var(--text-secondary);
     text-decoration: none;
+    position: relative;
+  }
+  .navbar-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 300ms ease-out;
   }
   .navbar-link:hover {
     color: var(--accent);
+  }
+  .navbar-link:hover::after {
+    transform: scaleX(1);
   }
 </style>

@@ -37,7 +37,9 @@ const { post, readingTime } = Astro.props;
       )}
     </header>
 
-    <slot />
+    <div class="post-body">
+      <slot />
+    </div>
   </article>
 </BaseLayout>
 
@@ -46,19 +48,20 @@ const { post, readingTime } = Astro.props;
     margin-top: 2rem;
   }
   .post-header {
-    margin-bottom: 2.5rem;
+    max-width: 800px;
+    margin: 0 auto 2.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border);
   }
   .post-title {
     margin: 0 0 1rem;
-    font-size: 2rem;
+    font-size: 2.1rem;
+    line-height: 1.3;
   }
   .post-meta {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    font-family: var(--font-serif);
     font-size: 0.85rem;
     color: var(--text-secondary);
   }
@@ -76,7 +79,11 @@ const { post, readingTime } = Astro.props;
     flex-wrap: wrap;
     gap: 0.75rem;
     margin-top: 0.75rem;
-    font-family: var(--font-serif);
     font-size: 0.8rem;
+  }
+  /* 正文阅读列：不超过 1200px 内容区，单列阅读宽度 800px */
+  .post-body {
+    max-width: 800px;
+    margin-inline: auto;
   }
 </style>

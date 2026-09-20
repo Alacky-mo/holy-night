@@ -23,6 +23,14 @@ const {
     <meta name="description" content={description} />
     <title>{title}</title>
 
+    <!-- 标题：Noto Serif SC / Playfair Display；正文：Noto Sans SC（Google Fonts 自动按 unicode-range 分片） -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- 主题初始化脚本（防 FOUC）：在首次绘制前恢复 localStorage 中的主题 -->
     <script is:inline>
       (function () {
