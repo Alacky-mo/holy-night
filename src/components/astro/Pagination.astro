@@ -1,49 +1,67 @@
 ---
+// 静态页码占位（无 JS 时链接到 ?page=N 也可跳转）；
+// 实际的 ?page 内容切换由 PaginationSync.vue 岛屿接管（DONT_DO #9）
 interface Props {
-  currentPage: number;
   totalPages: number;
-  /** 分页基础路径，例如 '/archive'；首页传 '/' */
+  currentPage?: number;
   basePath?: string;
 }
 
-const { currentPage, totalPages, basePath = '/' } = Astro.props;
-const hasPrev = currentPage > 1;
-const hasNext = currentPage < totalPages;
+const { totalPages, currentPage = 1, basePath = '/' } = Astro.props;
+const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+const pageHref = (p: number): string =>
+  p === 1 ? basePath : `${basePath}?page=${p}`;
 ---
 
-<nav class="pagination" aria-label="分页">
-  {hasPrev && (
-    <a class="pagination-link" href={`${basePath}?page=${currentPage - 1}`}>
-      ← 上一页
-    </a>
-  )}
-  <span class="pagination-info">
-    第 {currentPage} / {totalPages} 页
-  </span>
-  {hasNext && (
-    <a class="pagination-link" href={`${basePath}?page=${currentPage + 1}`}>
-      下一页 →
-    </a>
-  )}
-</nav>
+{
+  totalPages > 1 && (
+    <nav class="pagination" aria-label="分页">
+      <span class="pagination-pages">
+        {pages.map((p) => (
+          <a
+            class:list={['pagination-link', { current: p === currentPage }]}
+            href={pageHref(p)}
+            data-page={p}
+            aria-current={p === currentPage ? 'page' : undefined}
+          >
+            {p}
+          </a>
+        ))}
+      </span>
+    </nav>
+  )
+}
 
 <style>
   .pagination {
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 1.5rem;
+    margin: 2.5rem 0;
     font-family: var(--font-serif);
-    font-size: 0.875rem;
+  }
+  .pagination-pages {
+    display: flex;
+    gap: 0.5rem;
   }
   .pagination-link {
-    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
     text-decoration: none;
   }
   .pagination-link:hover {
-    color: var(--accent-warm);
+    color: var(--accent);
+    border-color: var(--accent);
   }
-  .pagination-info {
-    color: var(--text-secondary);
+  .pagination-link.current {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(212, 175, 55, 0.12);
   }
 </style>

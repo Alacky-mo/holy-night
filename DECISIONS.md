@@ -12,3 +12,6 @@
 | 2026-09-21 | 视觉风格 | 魔法使之夜：深色夜空 + 鎏金 + 衬线典籍 | 差异化视觉，匹配内容创作博客的典雅气质 | 深色为默认主题，浅色作为适配补充 |
 | 2026-09-21 | 部署平台 | Vercel | Astro 官方一键部署，免费额度足够；支持环境变量与 Deploy Hook | 放弃 Netlify/GitHub Pages，Vercel 与 Astro 集成最顺 |
 | 2026-09-21 | 文章 URL | `/posts/[slug]`，slug 由 Notion 页面 id 生成 | 简单稳定，无需额外 slug 字段；Notion id 保证唯一 | 牺牲了 URL 可读性，换取内容模型最小化 |
+| 2026-09-21 | 首页分页 | 构建时渲染全部页段（`[data-post-page]`），`PaginationSync.vue` 岛屿按 `?page=N` 切换 | 纯 SSG 无法按 query 参数预渲染；静态 `Pagination.astro` 保留无 JS 降级链接，交互逻辑全部在 Vue 岛屿（DONT_DO #9） | 放弃 `/page/2` 多路由方案；遵循提示词约定的 `?page=` 形式 |
+| 2026-09-21 | 正文渲染 | 自建 `src/lib/notion-render.ts` 做最小块→HTML 映射，递归拉取子块树 | 不引入 markdown 转换库，零新依赖、输出可控；Notion 嵌套内容以子块存在，递归拉取避免丢块 | 非常规块类型先做富文本回退，未识别类型写构建日志，不静默丢块 |
+| 2026-09-21 | Notion 图片 | 阶段 1 直接引用 API 返回的图片 URL | 实现最简，封面/插图可立即显示 | Notion 内部文件为 S3 签名 URL（约 1 小时过期）；后续阶段需改为构建时下载本地化，属已知待办 |

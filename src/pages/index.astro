@@ -1,41 +1,44 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import NavBar from '../components/astro/NavBar.astro';
-import Footer from '../components/astro/Footer.astro';
-import ThemeToggle from '../components/vue/ThemeToggle.vue';
-import { getPublishedPosts } from '../lib/notion';
+import PostCard from '../components/astro/PostCard.astro';
+import Pagination from '../components/astro/Pagination.astro';
+import PaginationSync from '../components/vue/PaginationSync.vue';
+import { getAllPublishedPosts } from '../lib/notion';
 
-// 阶段 0 临时验证：拉取最新 10 篇已发布文章（Notion 未配置时优雅降级为空列表）
-const { posts } = await getPublishedPosts({ pageSize: 10 });
+// 阶段 1：构建时拉取全部已发布文章，按 10 篇/页切分为页段
+const PAGE_SIZE = 10;
+const allPosts = await getAllPublishedPosts();
+const pageCount = Math.max(1, Math.ceil(allPosts.length / PAGE_SIZE));
+const pages = Array.from({ length: pageCount }, (_, i) =>
+  allPosts.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE)
+);
 ---
 
 <BaseLayout title="Holy Night · 首页">
-  <NavBar />
   <main class="content">
     <h1>Holy Night</h1>
     <p class="home-subtitle">个人内容创作博客 · 杂文 / 书评 / 影评</p>
 
-    <!-- Vue 岛屿测试组件：client:visible 按需注水（阶段 0 验收标准 #4） -->
-    <ThemeToggle client:visible />
-
-    <section class="home-posts">
-      {posts.length === 0 ? (
+    {
+      allPosts.length === 0 ? (
         <p class="home-empty">
-          暂无文章——请检查是否已配置 Notion 环境变量并发布文章（详见
-          .env.example）。
+          暂无文章——请检查 Notion 数据库是否存在「状态=已发布」的文章。
         </p>
       ) : (
-        <ul class="home-post-list">
-          {posts.map((post) => (
-            <li key={post.id}>
-              <a href={`/posts/${post.slug}`}>{post.title}</a>
-            </li>
+        <>
+          {pages.map((pagePosts, index) => (
+            <section class="post-grid" data-post-page={index + 1} hidden={index !== 0}>
+              {pagePosts.map((post) => (
+                <PostCard post={post} />
+              ))}
+            </section>
           ))}
-        </ul>
-      )}
-    </section>
+          <Pagination totalPages={pageCount} />
+          <PaginationSync client:load totalPages={pageCount} />
+        </>
+      )
+    }
   </main>
-  <Footer />
 </BaseLayout>
 
 <style>
@@ -44,16 +47,5 @@ const { posts } = await getPublishedPosts({ pageSize: 10 });
   }
   .home-empty {
     color: var(--text-secondary);
-  }
-  .home-post-list {
-    margin: 0;
-    padding-left: 1.25rem;
-  }
-  .home-post-list a {
-    color: var(--text-primary);
-    text-decoration: none;
-  }
-  .home-post-list a:hover {
-    color: var(--accent);
   }
 </style>

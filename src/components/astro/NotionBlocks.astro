@@ -1,0 +1,21 @@
+---
+import type { NotionBlock } from '../../lib/notion';
+import { blocksToHtml } from '../../lib/notion-render';
+
+interface Props {
+  blocks: NotionBlock[];
+}
+
+const { blocks } = Astro.props;
+const unsupported = new Set<string>();
+const html = blocksToHtml(blocks, unsupported);
+
+// 构建时提示未识别块类型，避免静默丢块（阶段 1 验收 #5）
+if (unsupported.size > 0) {
+  console.log(
+    `[notion] 以下块类型暂未渲染，已跳过：${Array.from(unsupported).join('、')}`
+  );
+}
+---
+
+<div class="notion-body" set:html={html} />

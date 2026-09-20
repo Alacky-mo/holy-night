@@ -1,10 +1,35 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ArchiveTimeline from '../components/astro/ArchiveTimeline.astro';
+import { getAllPublishedPosts, type PostMeta } from '../lib/notion';
+
+const posts = await getAllPublishedPosts();
+
+// 按发布年份分组（Notion 返回顺序已是日期倒序，组内保持倒序）
+const UNDATED = '未标注日期';
+const groupMap = new Map<string, PostMeta[]>();
+for (const post of posts) {
+  const year = post.publishedAt ? post.publishedAt.slice(0, 4) : UNDATED;
+  const list = groupMap.get(year) ?? [];
+  list.push(post);
+  groupMap.set(year, list);
+}
+
+const groups = [...groupMap.entries()].map(([year, groupPosts]) => ({
+  year,
+  posts: groupPosts,
+}));
+// 年份倒序；未标注日期的组排最后
+groups.sort((a, b) => {
+  if (a.year === UNDATED) return 1;
+  if (b.year === UNDATED) return -1;
+  return b.year.localeCompare(a.year);
+});
 ---
 
 <BaseLayout title="归档 · Holy Night">
   <main class="content">
     <h1>归档</h1>
-    <p class="page-todo">归档时间线将在阶段 1 实现。</p>
+    <ArchiveTimeline groups={groups} />
   </main>
 </BaseLayout>

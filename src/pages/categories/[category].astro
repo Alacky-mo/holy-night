@@ -1,21 +1,51 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/astro/PostCard.astro';
+import { getAllPublishedPosts, type PostMeta } from '../../lib/notion';
 
-// 阶段 1 实现分类聚合；阶段 0 保持空路径
+// 从全部文章聚合出分类列表
 export async function getStaticPaths() {
-  return [];
+  const posts = await getAllPublishedPosts();
+  const categories = [
+    ...new Set(
+      posts
+        .map((p) => p.category)
+        .filter((category): category is string => Boolean(category))
+    ),
+  ];
+  return categories.map((category) => ({
+    params: { category },
+    props: {
+      category,
+      posts: posts.filter((p) => p.category === category),
+    },
+  }));
 }
 
 interface Props {
   category: string;
+  posts: PostMeta[];
 }
 
-const { category } = Astro.props;
+const { category, posts } = Astro.props;
 ---
 
 <BaseLayout title={`分类：${category} · Holy Night`}>
   <main class="content">
     <h1>分类：{category}</h1>
-    <p class="page-todo">分类页将在阶段 1 实现。</p>
+    <p class="page-count">共 {posts.length} 篇</p>
+    <section class="post-grid">
+      {posts.map((post) => (
+        <PostCard post={post} />
+      ))}
+    </section>
   </main>
 </BaseLayout>
+
+<style>
+  .page-count {
+    color: var(--text-secondary);
+    font-family: var(--font-serif);
+    font-size: 0.85rem;
+  }
+</style>

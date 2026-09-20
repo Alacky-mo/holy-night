@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import '../styles/markdown.css';
+import NavBar from '../components/astro/NavBar.astro';
+import Footer from '../components/astro/Footer.astro';
 
 interface Props {
   title?: string;
@@ -36,6 +38,8 @@ const {
     </script>
   </head>
   <body>
+    <NavBar />
     <slot />
+    <Footer />
   </body>
 </html>

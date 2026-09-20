@@ -24,3 +24,5 @@
 13. 禁止使用 TypeScript `any` 类型
 14. 禁止提交 `.env` 到 git；必须提供 `.env.example`
 15. 禁止在未运行 `npm run build` 验证的情况下宣称某阶段完成
+16. 禁止在 Astro 服务端代码里用 `process.env` 读取 `.env` 变量——Astro/Vite 只把 `.env` 注入 `import.meta.env`（`src/lib/notion.ts` 已做 `import.meta.env` 优先、`process.env` 兜底的双读）
+17. 禁止假设 Notion 正文只有顶层块——缩进/嵌套内容以子块形式存在，必须递归拉取，否则会丢块

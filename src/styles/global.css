@@ -75,6 +75,17 @@ h6 {
   padding-inline: 1.5rem;
 }
 
+/* 文章卡片网格（阶段 1 最简，阶段 2 精修） */
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+.post-grid[hidden] {
+  display: none;
+}
+
 /* 全局默认过渡：200–400ms、ease-out，克制优雅（AGENT.md 5.4 / DONT_DO #7） */
 a,
 button {

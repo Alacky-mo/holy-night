@@ -1,24 +1,36 @@
 ---
 import PostLayout from '../../layouts/PostLayout.astro';
-import { getPostBySlug } from '../../lib/notion';
+import NotionBlocks from '../../components/astro/NotionBlocks.astro';
+import { getAllPublishedPosts, getPostBySlug, type PostMeta } from '../../lib/notion';
+import { blocksToPlainText } from '../../lib/notion-render';
+import { estimateReadingTime } from '../../lib/utils';
 
-// 阶段 1 将基于 getPublishedPosts 生成全部文章路径；阶段 0 保持空路径，构建不报错
+// 遍历全部已发布文章生成静态路径（slug = Notion 页面 id）
 export async function getStaticPaths() {
-  return [];
+  const posts = await getAllPublishedPosts();
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
 }
 
 interface Props {
-  slug: string;
+  post: PostMeta;
 }
 
-const { slug } = Astro.props;
-const detail = await getPostBySlug(slug);
+const { post } = Astro.props;
+const detail = await getPostBySlug(post.slug);
+const readingTime = detail
+  ? estimateReadingTime(blocksToPlainText(detail.blocks))
+  : 1;
 ---
 
-<PostLayout title={detail?.meta.title ?? '文章未找到'}>
-  {detail ? (
-    <p class="post-todo">文章正文渲染将在阶段 1 实现。</p>
-  ) : (
-    <p class="post-missing">未找到文章（slug={slug}）。</p>
-  )}
+<PostLayout post={post} readingTime={readingTime}>
+  {
+    detail ? (
+      <NotionBlocks blocks={detail.blocks} />
+    ) : (
+      <p class="post-missing">正文加载失败，请稍后重新构建。</p>
+    )
+  }
 </PostLayout>

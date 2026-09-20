@@ -30,11 +30,19 @@ export interface PostMeta {
   publishedAt: string | null;
 }
 
-/** 单篇文章完整数据：元数据 + 正文 blocks */
+/** 块树节点：在 Notion 块基础上挂载递归拉取的子块（缩进/嵌套内容） */
+export interface NotionBlock extends BlockObjectResponse {
+  children: NotionBlock[];
+}
+
+/** 单篇文章完整数据：元数据 + 正文块树 */
 export interface PostDetail {
   meta: PostMeta;
-  blocks: BlockObjectResponse[];
+  blocks: NotionBlock[];
 }
+
+/** 递归拉取子块的最大深度，防止异常数据导致无限递归 */
+const MAX_BLOCK_DEPTH = 6;
 
 /** 分页结果 */
 export interface PaginatedPosts {
@@ -50,8 +58,11 @@ export interface GetPublishedPostsParams {
 
 // ---------- 客户端初始化（含环境变量校验） ----------
 
-const token = process.env.NOTION_TOKEN;
-const databaseId = process.env.NOTION_DATABASE_ID;
+// Astro/Vite 把 .env 注入 import.meta.env（服务端构建时可见）；
+// 同时保留 process.env 回退，兼容 Node 脚本等非 Astro 环境
+const token = import.meta.env.NOTION_TOKEN ?? process.env.NOTION_TOKEN;
+const databaseId =
+  import.meta.env.NOTION_DATABASE_ID ?? process.env.NOTION_DATABASE_ID;
 
 function createClient(): Client | null {
   if (!token || !databaseId) {
@@ -160,8 +171,26 @@ export async function getPublishedPosts(
   }
 }
 
-/** 递归拉取某个 block 的全部子块（分页合并） */
-async function fetchAllBlocks(
+/**
+ * 游标翻页拉取全部已发布文章（分类/标签/归档页与详情页 getStaticPaths 使用）。
+ * 任何一页失败都返回已拉取部分，不抛错。
+ */
+export async function getAllPublishedPosts(): Promise<PostMeta[]> {
+  const all: PostMeta[] = [];
+  let cursor: string | undefined;
+
+  for (;;) {
+    const result = await getPublishedPosts({ pageSize: 100, startCursor: cursor });
+    all.push(...result.posts);
+    if (!result.hasMore || !result.nextCursor) break;
+    cursor = result.nextCursor;
+  }
+
+  return all;
+}
+
+/** 拉取某 block 的直接子块（单页 100 条，自动翻页合并） */
+async function fetchChildBlocks(
   client: Client,
   blockId: string
 ): Promise<BlockObjectResponse[]> {
@@ -182,6 +211,26 @@ async function fetchAllBlocks(
   return blocks;
 }
 
+/** 递归拉取块树：has_children 的块继续向下取子块，避免嵌套内容丢块 */
+async function fetchBlockTree(
+  client: Client,
+  blockId: string,
+  depth = 0
+): Promise<NotionBlock[]> {
+  const children = await fetchChildBlocks(client, blockId);
+  const tree: NotionBlock[] = [];
+
+  for (const block of children) {
+    const node: NotionBlock = { ...block, children: [] };
+    if (block.has_children && depth < MAX_BLOCK_DEPTH) {
+      node.children = await fetchBlockTree(client, block.id, depth + 1);
+    }
+    tree.push(node);
+  }
+
+  return tree;
+}
+
 /**
  * 根据 slug（= Notion 页面 id）取单篇文章元数据 + 正文 blocks。
  * 未找到或请求失败时返回 null，不抛错。
@@ -196,7 +245,7 @@ export async function getPostBySlug(slug: string): Promise<PostDetail | null> {
       console.log(`[notion] 页面 ${slug} 缺少完整属性，返回 null。`);
       return null;
     }
-    const blocks = await fetchAllBlocks(client, slug);
+    const blocks = await fetchBlockTree(client, slug);
     return { meta: extractPostMeta(page), blocks };
   } catch (err) {
     const reason = err instanceof Error ? err.message : String(err);

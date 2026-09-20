@@ -1,28 +1,53 @@
 ---
+import type { PostMeta } from '../../lib/notion';
+import { formatDate } from '../../lib/utils';
+
 interface Props {
-  /** 归档条目：label 为年份/月份，count 为文章数 */
-  items: { label: string; count: number }[];
+  /** 归档分组：年份（降序）+ 该年文章（日期降序） */
+  groups: { year: string; posts: PostMeta[] }[];
 }
 
-const { items } = Astro.props;
+const { groups } = Astro.props;
 ---
 
 <div class="archive-timeline">
-  {items.length === 0 ? (
-    <p class="archive-empty">暂无归档数据</p>
+  {groups.length === 0 ? (
+    <p class="archive-empty">暂无文章</p>
   ) : (
-    <ul class="archive-list">
-      {items.map((item) => (
-        <li key={item.label} class="archive-item">
-          <span class="archive-label">{item.label}</span>
-          <span class="archive-count">{item.count} 篇</span>
-        </li>
-      ))}
-    </ul>
+    groups.map((group) => (
+      <section key={group.year} class="archive-group">
+        <h2 class="archive-year">{group.year}</h2>
+        <ul class="archive-list">
+          {group.posts.map((post) => (
+            <li key={post.id} class="archive-item">
+              {post.publishedAt && (
+                <time class="archive-date" datetime={post.publishedAt}>
+                  {formatDate(post.publishedAt).slice(5)}
+                </time>
+              )}
+              <a class="archive-link" href={`/posts/${post.slug}`}>
+                {post.title}
+              </a>
+              {post.category && <span class="archive-category">{post.category}</span>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
   )}
 </div>
 
 <style>
+  .archive-group {
+    margin-bottom: 2.5rem;
+  }
+  .archive-year {
+    margin: 0 0 1rem;
+    font-size: 1.5rem;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+  }
   .archive-list {
     list-style: none;
     margin: 0;
@@ -31,18 +56,29 @@ const { items } = Astro.props;
   .archive-item {
     display: flex;
     align-items: baseline;
-    justify-content: space-between;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+    padding: 0.55rem 0;
   }
-  .archive-label {
-    font-family: var(--font-serif);
-    color: var(--text-primary);
-  }
-  .archive-count {
+  .archive-date {
+    flex: none;
+    width: 3.5rem;
     font-family: var(--font-serif);
     font-size: 0.85rem;
     color: var(--text-secondary);
+  }
+  .archive-link {
+    flex: 1;
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+  .archive-link:hover {
+    color: var(--accent);
+  }
+  .archive-category {
+    flex: none;
+    font-family: var(--font-serif);
+    font-size: 0.75rem;
+    color: var(--accent);
   }
   .archive-empty {
     color: var(--text-secondary);

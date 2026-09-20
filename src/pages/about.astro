@@ -3,8 +3,24 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="关于 · Holy Night">
-  <main class="content">
+  <main class="content about-page">
     <h1>关于</h1>
-    <p class="page-todo">关于页将在阶段 1 实现。</p>
+    <p class="about-placeholder">
+      这里是 Holy Night（圣夜），一个记录杂文、书评与影评的个人博客。
+      我在 Notion 里写作，构建时自动发布到这里。
+    </p>
+    <p class="about-placeholder">
+      这是阶段 1 的占位自我介绍，正式内容将在后续替换。
+    </p>
   </main>
 </BaseLayout>
+
+<style>
+  .about-page {
+    max-width: 720px;
+  }
+  .about-placeholder {
+    color: var(--text-secondary);
+    line-height: 1.9;
+  }
+</style>

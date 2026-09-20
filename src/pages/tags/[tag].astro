@@ -1,21 +1,45 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/astro/PostCard.astro';
+import { getAllPublishedPosts, type PostMeta } from '../../lib/notion';
 
-// 阶段 1 实现标签聚合；阶段 0 保持空路径
+// 从全部文章聚合出标签列表
 export async function getStaticPaths() {
-  return [];
+  const posts = await getAllPublishedPosts();
+  const tags = [...new Set(posts.flatMap((p) => p.tags))];
+  return tags.map((tag) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts.filter((p) => p.tags.includes(tag)),
+    },
+  }));
 }
 
 interface Props {
   tag: string;
+  posts: PostMeta[];
 }
 
-const { tag } = Astro.props;
+const { tag, posts } = Astro.props;
 ---
 
 <BaseLayout title={`标签：${tag} · Holy Night`}>
   <main class="content">
     <h1>标签：{tag}</h1>
-    <p class="page-todo">标签页将在阶段 1 实现。</p>
+    <p class="page-count">共 {posts.length} 篇</p>
+    <section class="post-grid">
+      {posts.map((post) => (
+        <PostCard post={post} />
+      ))}
+    </section>
   </main>
 </BaseLayout>
+
+<style>
+  .page-count {
+    color: var(--text-secondary);
+    font-family: var(--font-serif);
+    font-size: 0.85rem;
+  }
+</style>
