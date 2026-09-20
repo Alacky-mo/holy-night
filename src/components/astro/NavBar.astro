@@ -1,0 +1,56 @@
+---
+// 纯静态导航组件（零 JS，DONT_DO #9：交互一律走 .vue 岛屿）
+const links = [
+  { href: '/', label: '首页' },
+  { href: '/archive', label: '归档' },
+  { href: '/about', label: '关于' },
+];
+---
+
+<nav class="navbar" aria-label="主导航">
+  <a class="navbar-brand" href="/">Holy Night</a>
+  <div class="navbar-links">
+    {links.map((link) => (
+      <a key={link.href} class="navbar-link" href={link.href}>
+        {link.label}
+      </a>
+    ))}
+  </div>
+</nav>
+
+<style>
+  .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    /* 底部金色渐变分割线（AGENT.md 5.4） */
+    background: linear-gradient(
+      to bottom,
+      transparent calc(100% - 2px),
+      var(--accent) 100%
+    );
+  }
+  .navbar-brand {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+  }
+  .navbar-links {
+    display: flex;
+    gap: 1.25rem;
+  }
+  .navbar-link {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+  .navbar-link:hover {
+    color: var(--accent);
+  }
+</style>

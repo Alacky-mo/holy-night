@@ -1,0 +1,24 @@
+---
+import PostLayout from '../../layouts/PostLayout.astro';
+import { getPostBySlug } from '../../lib/notion';
+
+// 阶段 1 将基于 getPublishedPosts 生成全部文章路径；阶段 0 保持空路径，构建不报错
+export async function getStaticPaths() {
+  return [];
+}
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+const detail = await getPostBySlug(slug);
+---
+
+<PostLayout title={detail?.meta.title ?? '文章未找到'}>
+  {detail ? (
+    <p class="post-todo">文章正文渲染将在阶段 1 实现。</p>
+  ) : (
+    <p class="post-missing">未找到文章（slug={slug}）。</p>
+  )}
+</PostLayout>

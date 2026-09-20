@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// 阶段 1 实现标签聚合；阶段 0 保持空路径
+export async function getStaticPaths() {
+  return [];
+}
+
+interface Props {
+  tag: string;
+}
+
+const { tag } = Astro.props;
+---
+
+<BaseLayout title={`标签：${tag} · Holy Night`}>
+  <main class="content">
+    <h1>标签：{tag}</h1>
+    <p class="page-todo">标签页将在阶段 1 实现。</p>
+  </main>
+</BaseLayout>

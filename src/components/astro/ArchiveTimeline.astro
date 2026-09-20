@@ -1,0 +1,50 @@
+---
+interface Props {
+  /** 归档条目：label 为年份/月份，count 为文章数 */
+  items: { label: string; count: number }[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="archive-timeline">
+  {items.length === 0 ? (
+    <p class="archive-empty">暂无归档数据</p>
+  ) : (
+    <ul class="archive-list">
+      {items.map((item) => (
+        <li key={item.label} class="archive-item">
+          <span class="archive-label">{item.label}</span>
+          <span class="archive-count">{item.count} 篇</span>
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+
+<style>
+  .archive-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .archive-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .archive-label {
+    font-family: var(--font-serif);
+    color: var(--text-primary);
+  }
+  .archive-count {
+    font-family: var(--font-serif);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  .archive-empty {
+    color: var(--text-secondary);
+  }
+</style>

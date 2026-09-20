@@ -1,0 +1,67 @@
+---
+import type { PostMeta } from '../../lib/notion';
+import { formatDate } from '../../lib/utils';
+
+interface Props {
+  post: PostMeta;
+}
+
+const { post } = Astro.props;
+---
+
+<article class="post-card">
+  <h2 class="post-card-title">
+    <a href={`/posts/${post.slug}`}>{post.title}</a>
+  </h2>
+  {post.excerpt && <p class="post-card-excerpt">{post.excerpt}</p>}
+  <div class="post-card-meta">
+    {post.publishedAt && (
+      <time datetime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
+    )}
+    {post.category && <span class="post-card-category">{post.category}</span>}
+  </div>
+</article>
+
+<style>
+  .post-card {
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    backdrop-filter: blur(8px);
+    padding: 1.25rem 1.5rem;
+    transition: transform 300ms ease-out, box-shadow 300ms ease-out,
+      border-color 300ms ease-out;
+  }
+  /* hover 上浮 2px + 金色光晕（AGENT.md 5.4） */
+  .post-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
+  }
+  .post-card-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+  }
+  .post-card-title a {
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+  .post-card-title a:hover {
+    color: var(--accent);
+  }
+  .post-card-excerpt {
+    margin: 0 0 0.75rem;
+    font-size: 0.925rem;
+    color: var(--text-secondary);
+  }
+  .post-card-meta {
+    display: flex;
+    gap: 1rem;
+    font-family: var(--font-serif);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+  .post-card-category {
+    color: var(--accent);
+  }
+</style>

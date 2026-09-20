@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// 阶段 1 实现分类聚合；阶段 0 保持空路径
+export async function getStaticPaths() {
+  return [];
+}
+
+interface Props {
+  category: string;
+}
+
+const { category } = Astro.props;
+---
+
+<BaseLayout title={`分类：${category} · Holy Night`}>
+  <main class="content">
+    <h1>分类：{category}</h1>
+    <p class="page-todo">分类页将在阶段 1 实现。</p>
+  </main>
+</BaseLayout>

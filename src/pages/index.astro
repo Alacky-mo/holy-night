@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NavBar from '../components/astro/NavBar.astro';
+import Footer from '../components/astro/Footer.astro';
+import ThemeToggle from '../components/vue/ThemeToggle.vue';
+import { getPublishedPosts } from '../lib/notion';
+
+// 阶段 0 临时验证：拉取最新 10 篇已发布文章（Notion 未配置时优雅降级为空列表）
+const { posts } = await getPublishedPosts({ pageSize: 10 });
+---
+
+<BaseLayout title="Holy Night · 首页">
+  <NavBar />
+  <main class="content">
+    <h1>Holy Night</h1>
+    <p class="home-subtitle">个人内容创作博客 · 杂文 / 书评 / 影评</p>
+
+    <!-- Vue 岛屿测试组件：client:visible 按需注水（阶段 0 验收标准 #4） -->
+    <ThemeToggle client:visible />
+
+    <section class="home-posts">
+      {posts.length === 0 ? (
+        <p class="home-empty">
+          暂无文章——请检查是否已配置 Notion 环境变量并发布文章（详见
+          .env.example）。
+        </p>
+      ) : (
+        <ul class="home-post-list">
+          {posts.map((post) => (
+            <li key={post.id}>
+              <a href={`/posts/${post.slug}`}>{post.title}</a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .home-subtitle {
+    color: var(--text-secondary);
+  }
+  .home-empty {
+    color: var(--text-secondary);
+  }
+  .home-post-list {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+  .home-post-list a {
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+  .home-post-list a:hover {
+    color: var(--accent);
+  }
+</style>

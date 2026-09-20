@@ -1,0 +1,49 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  /** 分页基础路径，例如 '/archive'；首页传 '/' */
+  basePath?: string;
+}
+
+const { currentPage, totalPages, basePath = '/' } = Astro.props;
+const hasPrev = currentPage > 1;
+const hasNext = currentPage < totalPages;
+---
+
+<nav class="pagination" aria-label="分页">
+  {hasPrev && (
+    <a class="pagination-link" href={`${basePath}?page=${currentPage - 1}`}>
+      ← 上一页
+    </a>
+  )}
+  <span class="pagination-info">
+    第 {currentPage} / {totalPages} 页
+  </span>
+  {hasNext && (
+    <a class="pagination-link" href={`${basePath}?page=${currentPage + 1}`}>
+      下一页 →
+    </a>
+  )}
+</nav>
+
+<style>
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    font-family: var(--font-serif);
+    font-size: 0.875rem;
+  }
+  .pagination-link {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .pagination-link:hover {
+    color: var(--accent-warm);
+  }
+  .pagination-info {
+    color: var(--text-secondary);
+  }
+</style>

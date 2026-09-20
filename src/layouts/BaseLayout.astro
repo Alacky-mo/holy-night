@@ -1,0 +1,41 @@
+---
+import '../styles/global.css';
+import '../styles/markdown.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Holy Night',
+  description = '个人内容创作博客 · 杂文 / 书评 / 影评',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+
+    <!-- 主题初始化脚本（防 FOUC）：在首次绘制前恢复 localStorage 中的主题 -->
+    <script is:inline>
+      (function () {
+        try {
+          var saved = localStorage.getItem('theme');
+          if (saved === 'light') {
+            document.documentElement.classList.add('light');
+          }
+        } catch (e) {
+          /* localStorage 不可用时静默忽略，保持默认深色主题 */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

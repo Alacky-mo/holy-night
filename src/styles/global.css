@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Holy Night 主题系统 —— 全部 CSS 变量严格对照 AGENT.md 5.2
+   深色（默认）:root + 浅色 .light（挂在 <html> 上切换）
+   ============================================================ */
+
+:root {
+  /* 深色主题（默认）：夜空 */
+  --bg-page: #0f1424;
+  --bg-page-end: #1a1428;
+  --bg-card: rgba(20, 27, 48, 0.7);
+  --accent: #d4af37;
+  --accent-warm: #e9c76b;
+  --text-primary: #e0e2eb;
+  --text-secondary: #8a90a8;
+  --border: rgba(212, 175, 55, 0.3);
+
+  /* 排版字体栈（AGENT.md 5.3） */
+  --font-serif: 'Noto Serif SC', 'Playfair Display', 'Songti SC', 'SimSun', serif;
+  --font-sans: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  color-scheme: dark;
+}
+
+html.light {
+  /* 浅色主题：羊皮纸 */
+  --bg-page: #f5f1e8;
+  --bg-page-end: #f5f1e8;
+  --bg-card: #ffffff;
+  --accent: #b8860b;
+  --accent-warm: #b8860b;
+  --text-primary: #2d2a24;
+  --text-secondary: #7a7265;
+  --border: rgba(184, 134, 11, 0.2);
+
+  color-scheme: light;
+}
+
+/* ---------- 基础层 ---------- */
+
+html {
+  background: linear-gradient(180deg, var(--bg-page) 0%, var(--bg-page-end) 100%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.8;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* 标题一律衬线体（DONT_DO #6：禁止粗黑无衬线标题） */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+
+/* 内容区：最大宽度 1200px，居中，两侧留白（DONT_DO #8） */
+.content {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+/* 全局默认过渡：200–400ms、ease-out，克制优雅（AGENT.md 5.4 / DONT_DO #7） */
+a,
+button {
+  transition: color 300ms ease-out, border-color 300ms ease-out,
+    background-color 300ms ease-out, box-shadow 300ms ease-out,
+    transform 300ms ease-out;
+}
