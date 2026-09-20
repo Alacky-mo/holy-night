@@ -28,3 +28,10 @@
 15. 禁止在未运行 `npm run build` 验证的情况下宣称某阶段完成
 16. 禁止在 Astro 服务端代码里用 `process.env` 读取 `.env` 变量——Astro/Vite 只把 `.env` 注入 `import.meta.env`（`src/lib/notion.ts` 已做 `import.meta.env` 优先、`process.env` 兜底的双读）
 17. 禁止假设 Notion 正文只有顶层块——缩进/嵌套内容以子块形式存在，必须递归拉取，否则会丢块
+
+## 阶段 3 交互与动效
+23. 禁止给入场/淡入动画用 `animation-fill-mode: both`（或 `backwards`）——隐藏标签页（后台加载、部分无头/自动化环境）会冻结 CSS 动画在首帧，元素会被定格在 `opacity:0` 导致正文永久空白。统一用无 fill（默认 none），让元素自然态保持可见，动画只做渐进增强
+24. 禁止让 `position: fixed` 的浮层（移动端目录、返回顶部）的祖先元素残留 `transform`/`filter`/`backdrop-filter`——这些属性会让该祖先成为 fixed 元素的包含块，导致 fixed 退化成相对页面定位。入场动画结束后必须 `transform: none`，且浮层不要放在带 transform 的容器内
+25. 禁止用渲染阻塞的方式引入 Google Fonts（`rel="stylesheet"` 直接挂 head）——中文字体分片多，慢网下会把 LCP 拖到 10s 级。必须 `preload as=style` + `onload` 切换 + `<noscript>` 兜底，并保留 `display=swap`
+26. 禁止在详情页只写 `<article>` 而没有 `<main>` landmark——屏幕阅读器依赖唯一 main 地标；结构应为 `<main class="content"><article>…</article></main>`。Notion 待办复选框（disabled 也要）必须带 `aria-label`，封面 `<img>` 必须有 width/height 固有尺寸
+27. 禁止在自动化/隐藏标签页里用 `requestAnimationFrame` 驱动首屏可见性（如滚动显隐）——该环境 rAF 不触发；滚动显隐直接在 scroll 监听里读 `scrollY` 赋值即可，真实浏览器与 Lighthouse 均正常

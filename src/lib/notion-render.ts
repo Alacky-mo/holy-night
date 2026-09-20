@@ -141,9 +141,10 @@ function renderBlock(
       return '<hr/>';
     case 'to_do': {
       const checked = block.to_do.checked ? 'checked' : '';
-      return `<p class="notion-todo"><input type="checkbox" disabled ${checked} /> ${richTextToHtml(
-        block.to_do.rich_text
-      )}</p>${childHtml}`;
+      const todoLabel = plainTextOf(block.to_do.rich_text) || '待办事项';
+      return `<p class="notion-todo"><input type="checkbox" disabled ${checked} aria-label="${escapeHtml(
+        todoLabel
+      )}" /> ${richTextToHtml(block.to_do.rich_text)}</p>${childHtml}`;
     }
     case 'callout':
       return `<blockquote class="notion-callout">${richTextToHtml(
@@ -224,6 +225,66 @@ export function blocksToHtml(
   }
 
   return html;
+}
+
+// ---------- 目录提取（阶段 3 目录跟随） ----------
+
+export interface TocItem {
+  /** 与渲染输出标题一致的锚点 id（h-{index}-{slug}） */
+  id: string;
+  text: string;
+  level: 1 | 2 | 3;
+}
+
+/**
+ * 从块树中提取标题，遍历顺序与 blocksToHtml 完全一致（含列表分组），
+ * 保证生成的 id 与正文渲染出的标题 id 逐字匹配。
+ */
+export function extractHeadings(blocks: NotionBlock[]): TocItem[] {
+  const out: TocItem[] = [];
+
+  const walk = (list: NotionBlock[]): void => {
+    for (let i = 0; i < list.length; i++) {
+      const block = list[i];
+
+      // 与 blocksToHtml 相同的列表分组逻辑，保证后续块的 index 对齐
+      if (
+        block.type === 'bulleted_list_item' ||
+        block.type === 'numbered_list_item'
+      ) {
+        const listType = block.type;
+        const items: NotionBlock[] = [];
+        while (i < list.length && list[i].type === listType) {
+          items.push(list[i]);
+          i++;
+        }
+        i--;
+        for (const item of items) walk(item.children);
+        continue;
+      }
+
+      if (
+        block.type === 'heading_1' ||
+        block.type === 'heading_2' ||
+        block.type === 'heading_3'
+      ) {
+        const level = Number(block.type.slice(-1)) as 1 | 2 | 3;
+        const richText =
+          block.type === 'heading_1'
+            ? block.heading_1.rich_text
+            : block.type === 'heading_2'
+              ? block.heading_2.rich_text
+              : block.heading_3.rich_text;
+        const text = plainTextOf(richText);
+        if (text) out.push({ id: headingId(text, i), text, level });
+      } else if (block.children.length > 0) {
+        walk(block.children);
+      }
+    }
+  };
+
+  walk(blocks);
+  return out;
 }
 
 // ---------- 纯文本（阅读时长估算用） ----------

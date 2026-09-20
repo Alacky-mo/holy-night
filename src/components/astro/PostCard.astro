@@ -16,6 +16,8 @@ const { post } = Astro.props;
         class="post-card-cover"
         src={post.cover}
         alt={post.title}
+        width="1200"
+        height="675"
         loading="lazy"
       />
     </a>
@@ -60,6 +62,8 @@ const { post } = Astro.props;
     display: block;
     aspect-ratio: 16 / 9;
     overflow: hidden;
+    /* 图片加载前的底色占位 */
+    background: rgba(128, 128, 128, 0.12);
   }
   .post-card-cover {
     width: 100%;

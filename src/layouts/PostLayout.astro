@@ -1,55 +1,77 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import PostToc from '../components/vue/PostToc.vue';
+import PostPrevNext from '../components/astro/PostPrevNext.astro';
 import type { PostMeta } from '../lib/notion';
+import type { TocItem } from '../lib/notion-render';
 import { formatDate } from '../lib/utils';
 
 interface Props {
   post: PostMeta;
   readingTime: number;
+  headings: TocItem[];
+  prev: PostMeta | null;
+  next: PostMeta | null;
 }
 
-const { post, readingTime } = Astro.props;
+const { post, readingTime, headings, prev, next } = Astro.props;
 ---
 
 <BaseLayout title={`${post.title} · Holy Night`} description={post.excerpt}>
-  <article class="content post-layout">
-    <header class="post-header">
-      <h1 class="post-title">{post.title}</h1>
-      <div class="post-meta">
-        {post.publishedAt && (
-          <time datetime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
-        )}
-        {post.category && (
-          <a class="post-category" href={`/categories/${post.category}`}>
-            {post.category}
-          </a>
-        )}
-        <span class="post-reading-time">约 {readingTime} 分钟</span>
-      </div>
-      {post.tags.length > 0 && (
-        <div class="post-tags">
-          {post.tags.map((tag) => (
-            <a key={tag} class="post-tag" href={`/tags/${tag}`}>
-              #{tag}
-            </a>
-          ))}
-        </div>
-      )}
-    </header>
+  <main class="content post-layout">
+    <div class:list={['post-shell', { 'has-toc': headings.length > 0 }]}>
+      <article class="post-article">
+        <header class="post-header">
+          <h1 class="post-title">{post.title}</h1>
+          <div class="post-meta">
+            {post.publishedAt && (
+              <time datetime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
+            )}
+            {post.category && (
+              <a class="post-category" href={`/categories/${post.category}`}>
+                {post.category}
+              </a>
+            )}
+            <span class="post-reading-time">约 {readingTime} 分钟</span>
+          </div>
+          {post.tags.length > 0 && (
+            <div class="post-tags">
+              {post.tags.map((tag) => (
+                <a key={tag} class="post-tag" href={`/tags/${tag}`}>
+                  #{tag}
+                </a>
+              ))}
+            </div>
+          )}
+        </header>
 
-    <div class="post-body">
-      <slot />
+        <div class="post-body">
+          <slot />
+        </div>
+
+        <PostPrevNext prev={prev} next={next} />
+      </article>
+
+      {headings.length > 0 && (
+        <aside class="post-aside">
+          <PostToc headings={headings} client:load />
+        </aside>
+      )}
     </div>
-  </article>
+  </main>
 </BaseLayout>
 
 <style>
   .post-layout {
     margin-top: 2rem;
   }
+  /* 移动端/平板：单列，目录走悬浮按钮 */
+  .post-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
   .post-header {
-    max-width: 800px;
-    margin: 0 auto 2.5rem;
+    margin-bottom: 2.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border);
   }
@@ -81,9 +103,23 @@ const { post, readingTime } = Astro.props;
     margin-top: 0.75rem;
     font-size: 0.8rem;
   }
-  /* 正文阅读列：不超过 1200px 内容区，单列阅读宽度 800px */
   .post-body {
     max-width: 800px;
-    margin-inline: auto;
+  }
+
+  /* 桌面端：正文 800px + 右侧 240px 目录，整体居中 */
+  @media (min-width: 1025px) {
+    .post-shell.has-toc {
+      grid-template-columns: minmax(0, 800px) 240px;
+      gap: 3rem;
+      justify-content: center;
+    }
+    .post-aside {
+      position: sticky;
+      top: 5rem;
+      align-self: start;
+      max-height: calc(100vh - 6rem);
+      overflow-y: auto;
+    }
   }
 </style>

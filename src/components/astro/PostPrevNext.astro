@@ -1,0 +1,93 @@
+---
+import type { PostMeta } from '../../lib/notion';
+
+interface Props {
+  /** 上一篇（更新的一篇，按发布日期倒序中的前一条），无则 null */
+  prev: PostMeta | null;
+  /** 下一篇（更旧的一篇），无则 null */
+  next: PostMeta | null;
+}
+
+const { prev, next } = Astro.props;
+---
+
+{
+  (prev || next) && (
+    <nav class="post-nav" aria-label="文章导航">
+      {prev ? (
+        <a class="post-nav-item prev" href={`/posts/${prev.slug}`}>
+          <span class="post-nav-label">上一篇</span>
+          <span class="post-nav-title">{prev.title}</span>
+        </a>
+      ) : (
+        <span class="post-nav-item prev disabled" aria-hidden="true" />
+      )}
+      {next ? (
+        <a class="post-nav-item next" href={`/posts/${next.slug}`}>
+          <span class="post-nav-label">下一篇</span>
+          <span class="post-nav-title">{next.title}</span>
+        </a>
+      ) : (
+        <span class="post-nav-item next disabled" aria-hidden="true" />
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .post-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .post-nav-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    background: var(--bg-card);
+    min-width: 0;
+  }
+  .post-nav-item.next {
+    text-align: right;
+  }
+  .post-nav-item.disabled {
+    border: none;
+    background: transparent;
+  }
+  .post-nav-label {
+    font-family: var(--font-serif);
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.1em;
+  }
+  .post-nav-title {
+    font-size: 0.92rem;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .post-nav-item:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 16px rgba(212, 175, 55, 0.2);
+    transform: translateY(-2px);
+  }
+  .post-nav-item:hover .post-nav-title {
+    color: var(--accent);
+  }
+  @media (max-width: 600px) {
+    .post-nav {
+      grid-template-columns: 1fr;
+    }
+    .post-nav-item.next {
+      text-align: left;
+    }
+  }
+</style>

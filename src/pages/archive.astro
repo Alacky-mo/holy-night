@@ -30,6 +30,10 @@ groups.sort((a, b) => {
 <BaseLayout title="归档 · Holy Night">
   <main class="content">
     <h1>归档</h1>
-    <ArchiveTimeline groups={groups} />
+    {groups.length === 0 ? (
+      <p class="empty-state">暂无文章——请检查 Notion 数据库是否存在「状态=已发布」的文章。</p>
+    ) : (
+      <ArchiveTimeline groups={groups} />
+    )}
   </main>
 </BaseLayout>

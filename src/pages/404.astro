@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="圣夜迷途 · 404 · Holy Night">
+  <main class="content not-found">
+    <p class="not-found-code">404</p>
+    <h1 class="not-found-title">圣夜迷途</h1>
+    <p class="not-found-text">
+      你追寻的页面已隐入夜色，或许从未存在，或许已被合上。
+    </p>
+    <a class="not-found-home" href="/">回到首页</a>
+  </main>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+  }
+  .not-found-code {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(4rem, 18vw, 7rem);
+    font-weight: 500;
+    line-height: 1;
+    color: var(--accent);
+    text-shadow: 0 0 30px rgba(212, 175, 55, 0.35);
+  }
+  .not-found-title {
+    margin: 0.5rem 0 1rem;
+    font-size: 1.6rem;
+    letter-spacing: 0.3em;
+  }
+  .not-found-text {
+    margin: 0 0 2rem;
+    color: var(--text-secondary);
+    font-family: var(--font-serif);
+  }
+  .not-found-home {
+    display: inline-block;
+    padding: 0.5rem 1.6rem;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    color: var(--accent);
+    text-decoration: none;
+    font-family: var(--font-serif);
+  }
+  .not-found-home:hover {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(233, 199, 107, 0.08));
+    box-shadow: 0 0 14px rgba(212, 175, 55, 0.3);
+  }
+</style>

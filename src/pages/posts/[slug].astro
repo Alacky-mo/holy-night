@@ -2,30 +2,44 @@
 import PostLayout from '../../layouts/PostLayout.astro';
 import NotionBlocks from '../../components/astro/NotionBlocks.astro';
 import { getAllPublishedPosts, getPostBySlug, type PostMeta } from '../../lib/notion';
-import { blocksToPlainText } from '../../lib/notion-render';
+import { blocksToPlainText, extractHeadings } from '../../lib/notion-render';
 import { estimateReadingTime } from '../../lib/utils';
 
 // 遍历全部已发布文章生成静态路径（slug = Notion 页面 id）
+// 文章按发布日期倒序，相邻文章即上一篇（更新）/ 下一篇（更旧）
 export async function getStaticPaths() {
   const posts = await getAllPublishedPosts();
-  return posts.map((post) => ({
+  return posts.map((post, index) => ({
     params: { slug: post.slug },
-    props: { post },
+    props: {
+      post,
+      prev: index > 0 ? posts[index - 1] : null,
+      next: index < posts.length - 1 ? posts[index + 1] : null,
+    },
   }));
 }
 
 interface Props {
   post: PostMeta;
+  prev: PostMeta | null;
+  next: PostMeta | null;
 }
 
-const { post } = Astro.props;
+const { post, prev, next } = Astro.props;
 const detail = await getPostBySlug(post.slug);
 const readingTime = detail
   ? estimateReadingTime(blocksToPlainText(detail.blocks))
   : 1;
+const headings = detail ? extractHeadings(detail.blocks) : [];
 ---
 
-<PostLayout post={post} readingTime={readingTime}>
+<PostLayout
+  post={post}
+  readingTime={readingTime}
+  headings={headings}
+  prev={prev}
+  next={next}
+>
   {
     detail ? (
       <NotionBlocks blocks={detail.blocks} />

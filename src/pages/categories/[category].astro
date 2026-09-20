@@ -34,11 +34,15 @@ const { category, posts } = Astro.props;
   <main class="content">
     <h1>分类：{category}</h1>
     <p class="page-count">共 {posts.length} 篇</p>
-    <section class="post-grid">
-      {posts.map((post) => (
-        <PostCard post={post} />
-      ))}
-    </section>
+    {posts.length > 0 ? (
+      <section class="post-grid">
+        {posts.map((post) => (
+          <PostCard post={post} />
+        ))}
+      </section>
+    ) : (
+      <p class="empty-state">该分类下暂无文章</p>
+    )}
   </main>
 </BaseLayout>
 
