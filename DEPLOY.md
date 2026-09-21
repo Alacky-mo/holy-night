@@ -15,6 +15,8 @@
 | `public/robots.txt` → `Sitemap:` | `https://holy-night.vercel.app/sitemap-index.xml` | 同上，域名不同必须同步修改 |
 
 > 为什么必须改：`site` 决定 sitemap 全部 URL 与 Open Graph 图片的绝对地址；`robots.txt` 的 Sitemap 指向若与真实域名不符，站长平台会报错。
+>
+> **最省事做法**：第 2 步在 Vercel 创建项目时，把项目名直接填 `holy-night`，默认域名就是 `https://holy-night.vercel.app`，与两处占位完全一致，**无需修改任何代码**。
 
 ---
 
