@@ -37,7 +37,7 @@
 | 1 页面  | ✅ 已完成 | `4c7efed` | 首页 / 归档 / 分类 / 标签 / 详情 5 页 + Notion 块渲染、分页、上下篇数据基础          |
 | 2 视觉  | ✅ 已完成 | `e8c7e4b` | 双主题（深色默认 / 浅色）、魔法使之夜配色、Notion 全块样式、主题切换                     |
 | 3 交互  | ✅ 已完成 | `266fee5` | 目录跟随、返回顶部、上一篇 / 下一篇、响应式、入场动效、404、空状态、favicon                |
-| 4 部署  | 🔶 代码就绪 · 待用户部署 | 待提交 | SEO（OG/Twitter/sitemap/robots）、图片本地化、DEPLOY.md；Git 远程 / Vercel / Deploy Hook 需用户操作（见 `DEPLOY.md`） |
+| 4 部署  | 🔶 代码就绪 · 待用户部署 | `fd47136` | SEO（OG/Twitter/sitemap/robots）、图片本地化、DEPLOY.md；Git 远程 / Vercel / Deploy Hook 需用户操作（见 `DEPLOY.md`） |
 
 当前分支 `main`。
 
