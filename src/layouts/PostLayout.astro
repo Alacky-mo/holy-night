@@ -17,7 +17,13 @@ interface Props {
 const { post, readingTime, headings, prev, next } = Astro.props;
 ---
 
-<BaseLayout title={`${post.title} · Holy Night`} description={post.excerpt}>
+<BaseLayout
+  title={`${post.title} · Holy Night`}
+  description={post.excerpt || post.title}
+  ogImage={post.cover}
+  ogType="article"
+  canonicalPath={`/posts/${post.slug}`}
+>
   <main class="content post-layout">
     <div class:list={['post-shell', { 'has-toc': headings.length > 0 }]}>
       <article class="post-article">

@@ -11,6 +11,7 @@ import type {
   BlockObjectResponse,
   PageObjectResponse,
 } from '@notionhq/client/build/src/api-endpoints';
+import { localizeBlocks, localizeCover } from './image-localize';
 
 // ---------- 对外类型 ----------
 
@@ -154,6 +155,12 @@ export async function getPublishedPosts(
     });
 
     const posts = response.results.filter(isFullPage).map(extractPostMeta);
+    // 封面本地化：Notion S3 签名 URL（约 1 小时过期）→ 本地静态路径，失败回退原 URL
+    await Promise.all(
+      posts.map(async (post) => {
+        post.cover = await localizeCover(post.id, post.cover);
+      })
+    );
     const titles = posts.map((p) => p.title).join('、') || '（无）';
     console.log(`[notion] 拉取到 ${posts.length} 篇文章：${titles}`);
 
@@ -246,7 +253,11 @@ export async function getPostBySlug(slug: string): Promise<PostDetail | null> {
       return null;
     }
     const blocks = await fetchBlockTree(client, slug);
-    return { meta: extractPostMeta(page), blocks };
+    // 正文图片本地化：递归替换 file 类型图片 URL 为本地静态路径（失败回退原 URL）
+    await localizeBlocks(slug, blocks);
+    const meta = extractPostMeta(page);
+    meta.cover = await localizeCover(slug, meta.cover);
+    return { meta, blocks };
   } catch (err) {
     const reason = err instanceof Error ? err.message : String(err);
     console.log(

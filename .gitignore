@@ -7,6 +7,9 @@ dist/
 # generated types
 .astro/
 
+# 构建期下载的 Notion 图片（不入库，部署时由 Vercel 重新拉取生成，见 src/lib/image-localize.ts）
+public/images/
+
 # environment（真实密钥不入库，仅提交样例）
 .env
 .env.*

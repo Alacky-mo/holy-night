@@ -6,14 +6,35 @@ import Footer from '../components/astro/Footer.astro';
 import BackToTop from '../components/vue/BackToTop.vue';
 
 interface Props {
+  /** 页面 title；缺省用站点名 */
   title?: string;
+  /** 页面 description；缺省用站点简介 */
   description?: string;
+  /** Open Graph 图片：相对路径（/images/...）或绝对 URL；缺省用站点名 */
+  ogImage?: string | null;
+  /** og:type：文章页传 article，其余默认 website */
+  ogType?: 'website' | 'article';
+  /** 当前页规范 URL（相对路径，如 /posts/xxx），缺省不输出 canonical */
+  canonicalPath?: string;
 }
 
 const {
   title = 'Holy Night',
   description = '个人内容创作博客 · 杂文 / 书评 / 影评',
+  ogImage = null,
+  ogType = 'website',
+  canonicalPath,
 } = Astro.props;
+
+// Astro.site 来自 astro.config.mjs 的 site 字段；OG 图/canonical 需要绝对 URL
+const site = Astro.site;
+const absOgImage = ogImage
+  ? /^https?:\/\//.test(ogImage)
+    ? ogImage
+    : new URL(ogImage, site).toString()
+  : null;
+const canonical = canonicalPath ? new URL(canonicalPath, site).toString() : null;
+const siteName = 'Holy Night';
 ---
 
 <!doctype html>
@@ -22,7 +43,21 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph / Twitter Card（微信、Twitter 等分享预览依赖） -->
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {absOgImage && <meta property="og:image" content={absOgImage} />}
+    <meta name="twitter:card" content={absOgImage ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {absOgImage && <meta name="twitter:image" content={absOgImage} />}
+    {canonical && <link rel="canonical" href={canonical} />}
+
     <title>{title}</title>
 
     <!-- 标题：Noto Serif SC / Playfair Display；正文：Noto Sans SC（Google Fonts 自动按 unicode-range 分片）

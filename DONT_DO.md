@@ -35,3 +35,9 @@
 25. 禁止用渲染阻塞的方式引入 Google Fonts（`rel="stylesheet"` 直接挂 head）——中文字体分片多，慢网下会把 LCP 拖到 10s 级。必须 `preload as=style` + `onload` 切换 + `<noscript>` 兜底，并保留 `display=swap`
 26. 禁止在详情页只写 `<article>` 而没有 `<main>` landmark——屏幕阅读器依赖唯一 main 地标；结构应为 `<main class="content"><article>…</article></main>`。Notion 待办复选框（disabled 也要）必须带 `aria-label`，封面 `<img>` 必须有 width/height 固有尺寸
 27. 禁止在自动化/隐藏标签页里用 `requestAnimationFrame` 驱动首屏可见性（如滚动显隐）——该环境 rAF 不触发；滚动显隐直接在 scroll 监听里读 `scrollY` 赋值即可，真实浏览器与 Lighthouse 均正常
+
+## 阶段 4 部署与 SEO
+28. 禁止升级 `@astrojs/sitemap` 到 3.3+（含 3.7.x）——其 `astro:build:done` 读 Astro 5 的 `_routes` 字段，Astro 4.16 下构建报 `Cannot read properties of undefined (reading 'reduce')`；保持 `^3.2.1`，升级 Astro 主版本时再一并评估
+29. 禁止把 `public/images/` 提交入库——构建期下载的 Notion 图片由 Vercel 每次构建重新生成，已加入 `.gitignore`；提交只会造成噪音与过期图片
+30. 禁止让 `astro.config.mjs` 的 `site` 与 `public/robots.txt` 的 Sitemap 指向不一致——改域名（绑定自定义域名）必须两处同步修改，否则 sitemap URL 与 OG 图绝对地址指向错误域名
+31. 禁止给 Notion 图片本地化直接写 `public/images/` 而不经 `astro:build:done` 拷贝钩子——Astro 构建在 `getStaticPaths` 拉数据（下载图片）之前就已拷贝 `public/` 进 `dist/`，不补拷则线上图片缺失

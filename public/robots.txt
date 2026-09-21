@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://holy-night.vercel.app/sitemap-index.xml
