@@ -1,0 +1,36 @@
+# 方案 B：定时触发 Vercel 重建（Notion 更新兜底）
+#
+# 工作原理：GitHub Actions 按 cron 每 30 分钟启动一次任务，在临时服务器上
+# 用 curl POST 请求 Vercel Deploy Hook，触发一次生产构建。
+# Notion 里改了文章状态，最迟一个周期（30 分钟）内自动上线。
+#
+# 启用步骤（一次性）：
+#   1. Vercel 项目 → Settings → Git → Deploy Hooks → Create Hook，复制 URL
+#   2. 本仓库 → Settings → Secrets and variables → Actions → New repository secret
+#      名称：VERCEL_DEPLOY_HOOK，值：粘贴上面的 Hook URL
+#   3. 推送本文件到 main 后自动生效；也可在 Actions 页手动 Run workflow 测试
+name: Rebuild site on schedule
+
+on:
+  schedule:
+    # 每 30 分钟一次（GitHub 最短间隔 5 分钟；cron 为 UTC 时区）
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # 支持在 Actions 页面手动触发，便于测试
+
+jobs:
+  ping-vercel:
+    name: Trigger Vercel deploy hook
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send POST to deploy hook
+        env:
+          HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK_URL" ]; then
+            echo "::warning::VERCEL_DEPLOY_HOOK Secret 未配置，跳过本次触发。请在仓库 Settings → Secrets 中添加。"
+            exit 0
+          fi
+          curl -fsS -X POST "$HOOK_URL" || {
+            echo "::error::Vercel Deploy Hook 调用失败，请检查 Hook URL 是否有效。"
+            exit 1
+          }

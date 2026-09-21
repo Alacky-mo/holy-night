@@ -88,12 +88,18 @@ git push -u origin main
 
 > 若 Notion 的 Button 不显示 Webhook 选项（个别账号/区域限制），退而用方案 B 或 C。
 
-#### 方案 B：简单 cron 定时 ping（兜底，免配置）
+#### 方案 B：GitHub Actions 定时 ping（兜底，文件已就绪，推荐做）
 
-用一个免费定时服务每 30–60 分钟请求一次 Deploy Hook，Notion 改了文章后最迟一个周期内自动上线。
+**工作流文件已写好**：`.github/workflows/rebuild.yml`（每 30 分钟请求一次 Deploy Hook，支持 Actions 页手动触发）。只需两步启用：
 
-- [cron-job.org](https://cron-job.org)：注册 → 新建 Cron Job → URL 填 Vercel Deploy Hook → 周期 30 分钟。
-- 或 GitHub Actions：仓库建 `.github/workflows/rebuild.yml`，用 `schedule` 定时 `curl` Hook（需要把 Hook URL 存成仓库 Secret）。
+1. 仓库 → **Settings → Secrets and variables → Actions → New repository secret**：
+   - Name：`VERCEL_DEPLOY_HOOK`
+   - Value：粘贴 3.1 的 Vercel Deploy Hook URL
+2. 推送 `main` 后自动生效；可到 **Actions** 页选 `Rebuild site on schedule` → **Run workflow** 手动测试。
+
+原理：GitHub 每 30 分钟在临时服务器上 `curl` 一次 Hook → Vercel 重建。免费额度足够（个人博客每月约 1440 次秒级任务）。
+
+- 备选：cron-job.org 注册后同样填 Hook URL + 周期 30 分钟。
 - 缺点：非实时；优点：零平台依赖、稳定兜底。
 
 #### 方案 C：手动书签（最简）
