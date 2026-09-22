@@ -27,3 +27,12 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# 设计工作素材（本地参考：样稿、OST 裁图、脚本，不参与构建，不入库）
+design/
+
+# 本地预览/自检临时产物
+.preview/
+.preview-shots/
+preview.log
+preview.err.log
