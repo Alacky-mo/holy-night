@@ -4,6 +4,7 @@ import '../styles/markdown.css';
 import NavBar from '../components/astro/NavBar.astro';
 import Footer from '../components/astro/Footer.astro';
 import BackToTop from '../components/vue/BackToTop.vue';
+import AliceCompanion from '../components/vue/AliceCompanion.vue';
 
 interface Props {
   /** 页面 title；缺省用站点名 */
@@ -104,5 +105,6 @@ const siteName = 'Holy Night';
     <slot />
     <Footer />
     <BackToTop client:load />
+    <AliceCompanion client:load />
   </body>
 </html>
