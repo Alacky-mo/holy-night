@@ -1,46 +1,54 @@
 /* ============================================================
    markdown.css —— Notion 正文块渲染样式（.notion-body）
-   魔法使之夜 · 金色典籍风格（AGENT.md 第五节）
+   魔法使之夜 · 馆内夜读风格（AGENT.md 第五节，阶段 5 暖面板）
+   正文在 PostLayout 的暖暗/羊皮纸面板内渲染
    ============================================================ */
 
 .notion-body {
   font-size: 1.02rem;
   line-height: 1.8;
-  color: var(--text-primary);
+  color: var(--warm-text);
 }
 
 .notion-body > *:first-child {
   margin-top: 0;
 }
 
-/* ---------- 标题：衬线 + 轻微金色阴影 ---------- */
+/* ---------- 标题：灯下的小标题（琥珀软色 h2） ---------- */
 .notion-body h1,
 .notion-body h2,
 .notion-body h3 {
   margin: 2em 0 0.8em;
   font-weight: 500;
   line-height: 1.35;
-  text-shadow: 0 0 18px rgba(212, 175, 55, 0.12);
   scroll-margin-top: 5rem;
 }
 .notion-body h1 {
   font-size: 1.65rem;
+  color: var(--silver);
   padding-bottom: 0.4em;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--hairline);
 }
 .notion-body h2 {
   font-size: 1.38rem;
-  padding-left: 0.75rem;
-  border-left: 3px solid var(--accent);
+  color: var(--amber-soft);
+  letter-spacing: 0.05em;
 }
 .notion-body h3 {
   font-size: 1.18rem;
-  color: var(--accent-warm);
+  color: var(--silver);
+}
+html.light .notion-body h2 {
+  color: #8a5a24;
 }
 
 /* ---------- 段落 ---------- */
 .notion-body p {
   margin: 0 0 1.1em;
+  color: var(--warm-text);
+}
+html.light .notion-body p {
+  color: #3a342c;
 }
 
 /* ---------- 列表 ---------- */
@@ -53,72 +61,67 @@
   margin: 0.35em 0;
 }
 .notion-body li::marker {
-  color: var(--accent);
+  color: var(--amber);
 }
 .notion-body li > ul,
 .notion-body li > ol {
   margin: 0.35em 0;
 }
 
-/* ---------- 引用：3px 金色竖线 + 浅金文字 ---------- */
+/* ---------- 引用：琥珀竖条 + 斜体 + 淡琥珀底 ---------- */
 .notion-body blockquote {
-  margin: 0 0 1.2em;
-  padding: 0.6em 1.2em;
-  border-left: 3px solid var(--accent);
-  border-radius: 0 6px 6px 0;
-  color: var(--accent-warm);
-  background: linear-gradient(
-    90deg,
-    rgba(212, 175, 55, 0.1),
-    rgba(212, 175, 55, 0.02)
-  );
+  margin: 1.6rem 0;
+  padding: 0.8rem 1.4rem;
+  border-left: 2px solid var(--amber);
+  border-radius: 0 3px 3px 0;
+  font-family: var(--font-serif);
+  color: var(--amber-soft);
+  font-style: italic;
+  background: rgba(216, 168, 102, 0.06);
 }
 .notion-body blockquote p:last-child {
   margin-bottom: 0;
+  color: inherit;
 }
 .notion-body .notion-callout {
-  border-radius: 6px;
-  background: rgba(212, 175, 55, 0.08);
+  border-radius: 3px;
+  background: rgba(216, 168, 102, 0.08);
+}
+html.light .notion-body blockquote {
+  color: #8a5a24;
 }
 
-/* ---------- 行内代码 ---------- */
+/* ---------- 行内代码：琥珀底（馆内的纸） ---------- */
 .notion-body code {
   font-family: ui-monospace, SFMono-Regular, Consolas, 'Courier New', monospace;
-  font-size: 0.88em;
-  padding: 0.15em 0.4em;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-  background: rgba(128, 128, 128, 0.14);
+  font-size: 0.86em;
+  padding: 0.1em 0.4em;
+  border-radius: 2px;
+  background: rgba(216, 168, 102, 0.12);
+  color: var(--amber-soft);
+}
+html.light .notion-body code {
+  color: #8a5a24;
 }
 
-/* ---------- 代码块：深色背景 + 左侧金色竖条 ---------- */
+/* ---------- 代码块：深色底 + 雪光青左竖条（双主题统一，DONT_DO #18） ---------- */
 .notion-body pre {
   position: relative;
-  margin: 0 0 1.4em;
-  padding: 1em 1.2em 1em 1.4em;
+  margin: 1.4rem 0;
+  padding: 1.1rem 1.3rem;
   overflow-x: auto;
-  border: 1px solid var(--code-border);
-  border-radius: 8px;
   background: var(--code-bg);
+  border-left: 2px solid var(--ice);
+  border-radius: 0 3px 3px 0;
+  line-height: 1.7;
   box-shadow: 0 0 24px rgba(0, 0, 0, 0.25);
-}
-.notion-body pre::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.6em;
-  bottom: 0.6em;
-  width: 3px;
-  border-radius: 2px;
-  background: linear-gradient(180deg, var(--accent), var(--accent-warm));
 }
 .notion-body pre code {
   padding: 0;
   border: none;
   background: none;
-  color: #e0e2eb;
-  font-size: 0.9em;
-  line-height: 1.7;
+  color: #c8d6e6;
+  font-size: 0.85rem;
 }
 
 /* ---------- 图片 ---------- */
@@ -128,8 +131,8 @@
 .notion-body img {
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
-  border: 1px solid var(--border);
+  border-radius: 3px;
+  border: 1px solid var(--hairline);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.28);
 }
 .notion-body figcaption {
@@ -137,7 +140,7 @@
   text-align: center;
   font-family: var(--font-serif);
   font-size: 0.82rem;
-  color: var(--text-secondary);
+  color: var(--mist);
 }
 
 /* ---------- 分割线 ---------- */
@@ -148,7 +151,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--accent) 50%,
+    var(--amber) 50%,
     transparent 100%
   );
   opacity: 0.5;
@@ -160,21 +163,21 @@
   margin-bottom: 1.4em;
   border-collapse: collapse;
   font-size: 0.92rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--hairline);
+  border-radius: 3px;
   overflow: hidden;
 }
 .notion-body th,
 .notion-body td {
   padding: 0.55em 0.9em;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--hairline);
   text-align: left;
 }
 .notion-body th {
   font-family: var(--font-serif);
   font-weight: 500;
-  color: var(--accent);
-  background: rgba(212, 175, 55, 0.08);
+  color: var(--amber);
+  background: rgba(216, 168, 102, 0.08);
 }
 .notion-body tr:last-child td {
   border-bottom: none;
@@ -182,13 +185,17 @@
 
 /* ---------- 链接 ---------- */
 .notion-body a {
-  color: var(--accent);
+  color: var(--amber-soft);
   text-decoration: none;
   border-bottom: 1px solid transparent;
+  transition: color 200ms ease-out, border-bottom-color 200ms ease-out;
 }
 .notion-body a:hover {
-  color: var(--accent-warm);
-  border-bottom-color: var(--accent-warm);
+  color: var(--silver);
+  border-bottom-color: var(--amber-soft);
+}
+html.light .notion-body a {
+  color: #8a5a24;
 }
 
 /* ---------- 回退块 ---------- */
@@ -200,11 +207,11 @@
 }
 .notion-body .notion-todo input {
   margin-top: 0.5em;
-  accent-color: var(--accent);
+  accent-color: var(--amber);
 }
 .notion-body .notion-toggle summary {
   cursor: pointer;
-  color: var(--accent);
+  color: var(--amber);
   font-family: var(--font-serif);
 }
 .notion-body .notion-bookmark a {

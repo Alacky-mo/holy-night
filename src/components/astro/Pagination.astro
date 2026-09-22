@@ -50,21 +50,21 @@ const pageHref = (p: number): string =>
     height: 2rem;
     padding: 0 0.5rem;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: 3px;
     font-size: 0.85rem;
-    /* 其余页码灰蓝 */
-    color: var(--text-secondary);
+    /* 其余页码雾灰 */
+    color: var(--mist);
     text-decoration: none;
   }
   .pagination-link:hover {
-    color: var(--accent);
-    border-color: var(--border);
+    color: var(--silver);
+    border-color: var(--hairline-strong);
   }
-  /* 当前页金色高亮 */
+  /* 当前页月白高亮 */
   .pagination-link.current {
-    color: var(--accent);
-    border-color: var(--accent);
-    background: rgba(212, 175, 55, 0.12);
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+    color: var(--silver);
+    border-color: var(--silver);
+    background: rgba(231, 233, 242, 0.08);
+    box-shadow: 0 0 10px rgba(231, 233, 242, 0.12);
   }
 </style>

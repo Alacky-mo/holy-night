@@ -57,9 +57,9 @@ onBeforeUnmount(() => {
   justify-content: center;
   width: 2.6rem;
   height: 2.6rem;
-  color: var(--accent);
-  background: var(--bg-card-solid);
-  border: 1px solid var(--accent);
+  color: var(--silver-dim);
+  background: var(--glass-2);
+  border: 1px solid var(--hairline-strong);
   border-radius: 50%;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
   cursor: pointer;
@@ -68,7 +68,7 @@ onBeforeUnmount(() => {
   transform: translateY(8px);
   transition: opacity 200ms ease-out, transform 200ms ease-out,
     visibility 200ms ease-out, box-shadow 200ms ease-out,
-    background 200ms ease-out;
+    background-color 200ms ease-out;
 }
 .back-to-top.show {
   opacity: 1;
@@ -76,7 +76,8 @@ onBeforeUnmount(() => {
   transform: translateY(0);
 }
 .back-to-top:hover {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(233, 199, 107, 0.1));
-  box-shadow: 0 0 14px rgba(212, 175, 55, 0.45);
+  color: var(--silver);
+  border-color: var(--silver);
+  box-shadow: 0 0 14px rgba(231, 233, 242, 0.2);
 }
 </style>

@@ -35,24 +35,27 @@ const { prev, next } = Astro.props;
 }
 
 <style>
+  /* 暖面板内的上下篇导航（阶段 5 暖调） */
   .post-nav {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-    margin-top: 3rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
+    margin-top: 2.6rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--hairline);
   }
   .post-nav-item {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
     padding: 0.85rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    border: 1px solid var(--hairline);
+    border-radius: 3px;
     text-decoration: none;
-    background: var(--bg-card);
+    background: rgba(216, 168, 102, 0.04);
     min-width: 0;
+    transition: border-color 200ms ease-out, box-shadow 200ms ease-out,
+      transform 200ms ease-out, color 200ms ease-out;
   }
   .post-nav-item.next {
     text-align: right;
@@ -64,23 +67,29 @@ const { prev, next } = Astro.props;
   .post-nav-label {
     font-family: var(--font-serif);
     font-size: 0.78rem;
-    color: var(--text-secondary);
+    color: var(--mist);
     letter-spacing: 0.1em;
   }
   .post-nav-title {
     font-size: 0.92rem;
-    color: var(--text-primary);
+    color: var(--warm-text);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  html.light .post-nav-title {
+    color: #3a342c;
+  }
   .post-nav-item:hover {
-    border-color: var(--accent);
-    box-shadow: 0 0 16px rgba(212, 175, 55, 0.2);
+    border-color: var(--amber);
+    box-shadow: 0 0 16px rgba(216, 168, 102, 0.15);
     transform: translateY(-2px);
   }
   .post-nav-item:hover .post-nav-title {
-    color: var(--accent);
+    color: var(--amber-soft);
+  }
+  html.light .post-nav-item:hover .post-nav-title {
+    color: #8a5a24;
   }
   @media (max-width: 600px) {
     .post-nav {

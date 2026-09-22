@@ -23,39 +23,53 @@ const { post, readingTime, headings, prev, next } = Astro.props;
   ogImage={post.cover}
   ogType="article"
   canonicalPath={`/posts/${post.slug}`}
+  view="post"
 >
-  <main class="content post-layout">
+  <main class="post-wrap">
     <div class:list={['post-shell', { 'has-toc': headings.length > 0 }]}>
-      <article class="post-article">
-        <header class="post-header">
-          <h1 class="post-title">{post.title}</h1>
-          <div class="post-meta">
-            {post.publishedAt && (
-              <time datetime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
-            )}
-            {post.category && (
-              <a class="post-category" href={`/categories/${post.category}`}>
-                {post.category}
-              </a>
-            )}
-            <span class="post-reading-time">约 {readingTime} 分钟</span>
+      <article class="panel">
+        {post.cover && (
+          <div class="panel-cover">
+            <img
+              src={post.cover}
+              alt={post.title}
+              width="1200"
+              height="514"
+              loading="lazy"
+            />
           </div>
-          {post.tags.length > 0 && (
-            <div class="post-tags">
-              {post.tags.map((tag) => (
-                <a key={tag} class="post-tag" href={`/tags/${tag}`}>
-                  #{tag}
+        )}
+        <div class="panel-inner">
+          <header class="post-header">
+            <h1 class="post-title">{post.title}</h1>
+            <div class="post-meta">
+              {post.publishedAt && (
+                <time datetime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
+              )}
+              {post.category && (
+                <a class="cat" href={`/categories/${post.category}`}>
+                  {post.category}
                 </a>
-              ))}
+              )}
+              <span class="post-reading-time">约 {readingTime} 分钟</span>
             </div>
-          )}
-        </header>
+            {post.tags.length > 0 && (
+              <div class="post-tags">
+                {post.tags.map((tag) => (
+                  <a key={tag} class="post-tag" href={`/tags/${tag}`}>
+                    #{tag}
+                  </a>
+                ))}
+              </div>
+            )}
+          </header>
 
-        <div class="post-body">
-          <slot />
+          <div class="post-body">
+            <slot />
+          </div>
+
+          <PostPrevNext prev={prev} next={next} />
         </div>
-
-        <PostPrevNext prev={prev} next={next} />
       </article>
 
       {headings.length > 0 && (
@@ -68,52 +82,89 @@ const { post, readingTime, headings, prev, next } = Astro.props;
 </BaseLayout>
 
 <style>
-  .post-layout {
-    margin-top: 2rem;
+  /* 居中暖暗「馆内夜读」面板（浅色为羊皮纸），右侧目录结构不变（240px） */
+  .post-wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
   }
   /* 移动端/平板：单列，目录走悬浮按钮 */
   .post-shell {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
   }
-  .post-header {
-    margin-bottom: 2.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border);
+  .panel {
+    min-width: 0;
+    background: var(--warm-panel);
+    border: 1px solid rgba(216, 168, 102, 0.18);
+    border-radius: 3px;
+    color: var(--warm-text);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+  }
+  html.light .panel {
+    border-color: rgba(120, 85, 40, 0.22);
+    box-shadow: 0 24px 60px rgba(90, 70, 40, 0.18);
+  }
+  .panel-cover {
+    aspect-ratio: 21 / 9;
+    overflow: hidden;
+  }
+  .panel-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.92);
+  }
+  .panel-inner {
+    padding: 2.6rem clamp(1.4rem, 4vw, 3.4rem) 3.2rem;
   }
   .post-title {
-    margin: 0 0 1rem;
-    font-size: 2.1rem;
-    line-height: 1.3;
+    margin: 0 0 0.9rem;
+    font-size: clamp(1.7rem, 3.4vw, 2.3rem);
+    color: var(--silver);
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  html.light .post-title {
+    color: #2c2620;
   }
   .post-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 1.2rem;
+    align-items: center;
     font-size: 0.85rem;
-    color: var(--text-secondary);
-  }
-  .post-category,
-  .post-tag {
-    color: var(--accent);
-    text-decoration: none;
-  }
-  .post-category:hover,
-  .post-tag:hover {
-    color: var(--accent-warm);
+    color: var(--mist);
+    padding-bottom: 1.6rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--hairline);
   }
   .post-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
-    margin-top: 0.75rem;
+    margin: -1rem 0 0;
     font-size: 0.8rem;
+  }
+  .post-tag {
+    color: var(--amber-soft);
+    text-decoration: none;
+    transition: color 200ms ease-out;
+  }
+  .post-tag:hover {
+    color: var(--silver);
+  }
+  html.light .post-tag {
+    color: #8a5a24;
   }
   .post-body {
     max-width: 800px;
   }
 
-  /* 桌面端：正文 800px + 右侧 240px 目录，整体居中 */
+  /* 桌面端：正文 800px 面板 + 右侧 240px 目录，整体居中 */
   @media (min-width: 1025px) {
     .post-shell.has-toc {
       grid-template-columns: minmax(0, 800px) 240px;
@@ -126,6 +177,14 @@ const { post, readingTime, headings, prev, next } = Astro.props;
       align-self: start;
       max-height: calc(100vh - 6rem);
       overflow-y: auto;
+    }
+  }
+  @media (max-width: 640px) {
+    .post-wrap {
+      padding: 1.5rem 1rem 3rem;
+    }
+    .panel-inner {
+      padding: 1.8rem 1.3rem 2.2rem;
     }
   }
 </style>

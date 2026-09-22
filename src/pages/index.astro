@@ -14,51 +14,60 @@ const pages = Array.from({ length: pageCount }, (_, i) =>
 );
 ---
 
-<BaseLayout title="Holy Night · 首页">
-  <main class="content">
-    <header class="home-hero">
-      <h1>Holy Night</h1>
-      <p class="home-subtitle">个人内容创作博客 · 杂文 / 书评 / 影评</p>
+<BaseLayout title="Holy Night · 首页" view="home">
+  <main>
+    <!-- Hero：复刻 OST 封面（云隙光 + 银白衬线大标题 + 白色燕尾丝带） -->
+    <header class="hero">
+      <h1 class="hero-title">Holy Night</h1>
+      <div class="hero-ribbon">
+        <span class="ribbon">WITCH ON THE HOLY NIGHT</span>
+      </div>
+      <p class="hero-sub">个人内容创作博客 · 杂文 / 书评 / 影评</p>
+      <span class="hero-hint">SCROLL</span>
     </header>
 
-    {
-      allPosts.length === 0 ? (
-        <p class="home-empty">
-          暂无文章——请检查 Notion 数据库是否存在「状态=已发布」的文章。
-        </p>
-      ) : (
-        <>
-          {pages.map((pagePosts, index) => (
-            <section class="post-grid" data-post-page={index + 1} hidden={index !== 0}>
-              {pagePosts.map((post) => (
-                <PostCard post={post} />
-              ))}
-            </section>
-          ))}
-          <Pagination totalPages={pageCount} />
-          <PaginationSync client:load totalPages={pageCount} />
-        </>
-      )
-    }
+    <div class="content">
+      {
+        allPosts.length === 0 ? (
+          <p class="empty-state home-empty">
+            暂无文章——请检查 Notion 数据库是否存在「状态=已发布」的文章。
+          </p>
+        ) : (
+          <>
+            <div class="section-head">
+              <span class="line"></span>
+              <h2>
+                <svg class="star" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 0c.7 5.3 2.7 7.3 12 8-9.3.7-11.3 2.7-12 8-.7-5.3-2.7-7.3-12-8C9.3 7.3 11.3.7 12 0z" />
+                </svg>
+                &nbsp;最新文章
+              </h2>
+              <span class="line r"></span>
+            </div>
+            {pages.map((pagePosts, index) => (
+              <section class="post-grid" data-post-page={index + 1} hidden={index !== 0}>
+                {pagePosts.map((post) => (
+                  <PostCard post={post} />
+                ))}
+              </section>
+            ))}
+            <Pagination totalPages={pageCount} />
+            <PaginationSync client:load totalPages={pageCount} />
+          </>
+        )
+      }
+    </div>
+
+    <!-- 雪坡引言带（首页唯一抒情段） -->
+    <section class="band">
+      <p class="band-quote">「坂の上には、魔女が二人住んでいる」</p>
+      <p class="band-sub">坡道之上住着两位魔女——而这里住着文字与灯</p>
+    </section>
   </main>
 </BaseLayout>
 
 <style>
-  .home-hero {
-    margin: 2rem 0 0.5rem;
-  }
-  .home-hero h1 {
-    margin: 0 0 0.4rem;
-    font-size: 2.2rem;
-    letter-spacing: 0.04em;
-  }
-  .home-subtitle {
-    margin: 0;
-    font-family: var(--font-serif);
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-  }
   .home-empty {
-    color: var(--text-secondary);
+    margin-top: 1.5rem;
   }
 </style>

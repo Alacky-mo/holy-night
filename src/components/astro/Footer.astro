@@ -3,20 +3,49 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
-  <p>© {year} Holy Night · 个人内容创作博客</p>
+  <div class="footer-inner">
+    <svg class="star" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 0c.7 5.3 2.7 7.3 12 8-9.3.7-11.3 2.7-12 8-.7-5.3-2.7-7.3-12-8C9.3 7.3 11.3.7 12 0z" />
+    </svg>
+    <p class="footer-line">© {year} Holy Night · 个人内容创作博客</p>
+    <p class="footer-credit">Visual inspiration from Witch on the Holy Night (TYPE-MOON)</p>
+  </div>
 </footer>
 
 <style>
+  /* 宅邸楼梯背景 + 强压暗遮罩 + 中央四角星（样稿 footer） */
   .footer {
-    margin-top: 4rem;
-    padding: 1.5rem;
+    position: relative;
+    border-top: 1px solid var(--hairline);
+    padding: 3.4rem 1.5rem 2.4rem;
     text-align: center;
+    font-family: var(--font-serif);
+    font-size: 0.82rem;
+    color: var(--mist);
+    overflow: hidden;
+    background: url('/backgrounds/bg-stairs.jpg') center 20% / cover no-repeat;
+  }
+  .footer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--night-1), rgba(14, 18, 34, 0.86));
+  }
+  .footer-inner {
+    position: relative;
+  }
+  .footer .star {
+    color: var(--amber);
+    width: 1.4em;
+    height: 1.4em;
+    display: block;
+    margin: 0 auto 0.7rem;
   }
   .footer p {
-    margin: 0;
-    font-family: var(--font-serif);
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-    opacity: 0.8;
+    margin: 0.3rem 0;
+  }
+  .footer-credit {
+    opacity: 0.72;
+    font-size: 0.74rem;
   }
 </style>

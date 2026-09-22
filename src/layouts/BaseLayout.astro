@@ -16,6 +16,8 @@ interface Props {
   ogType?: 'website' | 'article';
   /** 当前页规范 URL（相对路径，如 /posts/xxx），缺省不输出 canonical */
   canonicalPath?: string;
+  /** 页面视图语义：决定固定背景与遮罩（阶段 5「双世界」） */
+  view?: 'home' | 'archive' | 'post' | 'default';
 }
 
 const {
@@ -24,6 +26,7 @@ const {
   ogImage = null,
   ogType = 'website',
   canonicalPath,
+  view = 'default',
 } = Astro.props;
 
 // Astro.site 来自 astro.config.mjs 的 site 字段；OG 图/canonical 需要绝对 URL
@@ -60,7 +63,7 @@ const siteName = 'Holy Night';
 
     <title>{title}</title>
 
-    <!-- 标题：Noto Serif SC / Playfair Display；正文：Noto Sans SC（Google Fonts 自动按 unicode-range 分片）
+    <!-- 标题：Noto Serif SC / 西文与丝带：Cormorant Garamond；正文：Noto Sans SC（Google Fonts 自动按 unicode-range 分片）
          非阻塞加载：preload 样式表 + onload 切换，避免字体 CSS 阻塞首屏渲染（LCP）；
          配合 display=swap，先用系统衬线/无衬线渲染，字体到位后再替换。 -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -68,13 +71,13 @@ const siteName = 'Holy Night';
     <link
       rel="preload"
       as="style"
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@400;500;600&family=Playfair+Display:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@400;500;600&family=Cormorant+Garamond:wght@500;600&display=swap"
       onload="this.onload=null;this.rel='stylesheet'"
     />
     <noscript>
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@400;500;600&family=Playfair+Display:wght@400;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@400;500;600&family=Cormorant+Garamond:wght@500;600&display=swap"
       />
     </noscript>
 
@@ -92,7 +95,11 @@ const siteName = 'Holy Night';
       })();
     </script>
   </head>
-  <body>
+  <body data-view={view}>
+    <!-- 固定背景三层：原画局部 + 遮罩 + 颗粒（阶段 5），按 data-view 切换 -->
+    <div class="bg-layer" aria-hidden="true"></div>
+    <div class="bg-scrim" aria-hidden="true"></div>
+    <div class="bg-grain" aria-hidden="true"></div>
     <NavBar />
     <slot />
     <Footer />

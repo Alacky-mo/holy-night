@@ -1,21 +1,37 @@
 ---
-// 纯静态导航（零 JS），主题切换岛屿在阶段 0 已可用，直接挂载
+// 纯静态导航（零 JS）：滚动毛玻璃由 NavBarScroll.vue 岛屿负责（DONT_DO #9），主题切换走 ThemeToggle 岛屿
 import ThemeToggle from '../vue/ThemeToggle.vue';
+import NavBarScroll from '../vue/NavBarScroll.vue';
 
 const links = [
   { href: '/', label: '首页' },
   { href: '/archive', label: '归档' },
   { href: '/about', label: '关于' },
 ];
+
+const pathname = Astro.url.pathname;
+function isActive(href: string): boolean {
+  if (href === '/') return pathname === '/';
+  return pathname.startsWith(href);
+}
 ---
 
-<nav class="navbar" aria-label="主导航">
+<nav class="navbar" id="site-nav" aria-label="主导航">
   <div class="navbar-inner">
-    <a class="navbar-brand" href="/">Holy Night</a>
+    <a class="navbar-brand" href="/">
+      <svg class="star" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 0c.7 5.3 2.7 7.3 12 8-9.3.7-11.3 2.7-12 8-.7-5.3-2.7-7.3-12-8C9.3 7.3 11.3.7 12 0z" />
+      </svg>
+      Holy Night
+    </a>
     <div class="navbar-right">
       <div class="navbar-links">
         {links.map((link) => (
-          <a key={link.href} class="navbar-link" href={link.href}>
+          <a
+            key={link.href}
+            class:list={['navbar-link', { active: isActive(link.href) }]}
+            href={link.href}
+          >
             {link.label}
           </a>
         ))}
@@ -23,30 +39,23 @@ const links = [
       <ThemeToggle client:load />
     </div>
   </div>
+  <NavBarScroll client:load />
 </nav>
 
 <style>
-  /* 顶部窄条：毛玻璃背景 */
+  /* 滚动前透明，滚动后毛玻璃（.scrolled 由 NavBarScroll.vue 切换） */
   .navbar {
     position: sticky;
     top: 0;
-    z-index: 10;
-    background: var(--bg-card);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
+    z-index: 20;
+    border-bottom: 1px solid transparent;
+    transition: background-color 300ms ease-out, border-color 300ms ease-out;
   }
-  /* 底部 1px 金色渐变分割线 */
-  .navbar::after {
-    content: '';
-    display: block;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      var(--accent) 50%,
-      transparent 100%
-    );
-    opacity: 0.6;
+  .navbar.scrolled {
+    background: var(--glass-2);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-bottom-color: var(--hairline);
   }
   .navbar-inner {
     display: flex;
@@ -54,69 +63,98 @@ const links = [
     justify-content: space-between;
     max-width: 1200px;
     margin-inline: auto;
-    padding: 0.6rem 1.5rem;
+    padding: 0.7rem 1.5rem;
   }
+  /* 品牌：衬线 600 + 琥珀四角星 */
   .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     font-family: var(--font-serif);
     font-size: 1.15rem;
-    font-weight: 500;
-    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--silver);
     text-decoration: none;
-    letter-spacing: 0.08em;
-    text-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+  }
+  .navbar-brand .star {
+    color: var(--amber);
+    width: 0.85em;
+    height: 0.85em;
   }
   .navbar-right {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
+    gap: 1.4rem;
   }
   .navbar-links {
     display: flex;
-    gap: 1.25rem;
+    gap: 1.5rem;
   }
+  /* 链接：发丝下划线从左展开；hover 琥珀，激活银白 */
   .navbar-link {
     font-family: var(--font-serif);
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+    font-size: 0.92rem;
+    color: var(--silver-dim);
     text-decoration: none;
     position: relative;
+    padding: 0.2rem 0;
+    transition: color 300ms ease-out;
   }
   .navbar-link::after {
     content: '';
     position: absolute;
     left: 0;
-    bottom: -4px;
-    width: 100%;
+    right: 100%;
+    bottom: -3px;
     height: 1px;
-    background: var(--accent);
-    transform: scaleX(0);
-    transition: transform 300ms ease-out;
+    background: var(--amber);
+    transition: right 300ms ease-out;
   }
   .navbar-link:hover {
-    color: var(--accent);
+    color: var(--silver);
   }
   .navbar-link:hover::after {
-    transform: scaleX(1);
+    right: 0;
+  }
+  .navbar-link.active {
+    color: var(--silver);
+  }
+  .navbar-link.active::after {
+    right: 0;
+    background: var(--silver);
   }
 
-  /* 移动端：精简链接，缩小间距，保证一行不换行（阶段 3） */
+  /* 移动端：精简链接，隐藏品牌四角星，保证一行不换行（阶段 3） */
   @media (max-width: 767px) {
     .navbar-inner {
-      padding: 0.55rem 1rem;
+      padding: 0.6rem 1rem;
       gap: 0.5rem;
     }
     .navbar-brand {
-      font-size: 1.02rem;
+      font-size: 0.98rem;
       letter-spacing: 0.04em;
+      gap: 0.3rem;
+    }
+    .navbar-brand .star {
+      display: none;
     }
     .navbar-right {
-      gap: 0.75rem;
+      gap: 0.6rem;
     }
     .navbar-links {
-      gap: 0.85rem;
+      gap: 0.7rem;
     }
     .navbar-link {
-      font-size: 0.85rem;
+      font-size: 0.84rem;
+    }
+  }
+  @media (max-width: 380px) {
+    .navbar-links {
+      gap: 0.55rem;
+    }
+    .navbar-link {
+      font-size: 0.8rem;
     }
   }
 </style>

@@ -1,6 +1,6 @@
 # Holy Night 开发进度与交接说明
 
-> 用途：阶段 4（部署上线）交接。新会话先读 
+> 用途：阶段 5（视觉重设计·双世界）交接。新会话先读 
 >
 > `AGENT.md`
 >
@@ -14,18 +14,26 @@
 >
 > ，再读本文件与 
 >
-> `prompts/stage-4-deploy.md`
+> `prompts/stage-5-redesign.md`
 >
 > 、
 >
-> `DEPLOY.md`
+> `REDESIGN_HANDOFF.md`
 >
-> 。
-> 最后更新：2026-09-21（阶段 4 代码完成，待用户部署）
+> 、
+>
+> `design/魔法使之夜风格重设计方案.md`
+>
+> 、
+>
+> `design/mockup/holy-night-redesign.html`
+>
+> （样稿 = 视觉唯一基准，以它为准）。
+> 最后更新：2026-09-22（阶段 5 代码完成并验证，待用户查看）
 
 ## 一、项目一句话
 
-个人内容创作博客「Holy Night」：Notion 作为 Headless CMS，**Astro 4 纯 SSG** 构建，Vue 3 岛屿做交互，Tailwind v3 + CSS 变量实现《魔法使之夜》深夜深金双主题，部署目标 Vercel。
+个人内容创作博客「Holy Night」：Notion 作为 Headless CMS，**Astro 4 纯 SSG** 构建，Vue 3 岛屿做交互，Tailwind v3 + CSS 变量实现《魔法使之夜》「双世界」双主题（冷调外景「夜」+ 暖调馆内「午后」），部署目标 Vercel。
 
 ## 二、总体进度
 
@@ -38,6 +46,7 @@
 | 2 视觉  | ✅ 已完成 | `e8c7e4b` | 双主题（深色默认 / 浅色）、魔法使之夜配色、Notion 全块样式、主题切换                     |
 | 3 交互  | ✅ 已完成 | `266fee5` | 目录跟随、返回顶部、上一篇 / 下一篇、响应式、入场动效、404、空状态、favicon                |
 | 4 部署  | 🔶 代码就绪 · 待用户部署 | `fd47136` | SEO（OG/Twitter/sitemap/robots）、图片本地化、DEPLOY.md；Git 远程 / Vercel / Deploy Hook 需用户操作（见 `DEPLOY.md`） |
+| 5 重设计 | ✅ 已完成 | 见本次提交 | 「双世界」视觉重设计：月白+琥珀 token 迁移、固定背景三层、Hero/丝带/引言带、暖调文章面板、菱形归档时间轴、导航滚动毛玻璃、Cormorant 西文字体、背景图入库 `public/backgrounds/` |
 
 当前分支 `main`。
 
@@ -73,7 +82,7 @@
 
 * **交互只在&#x20;**`.vue`**&#x20;岛屿**：`.astro` 组件零 JS（DONT\_DO #9）。
 
-* **字体**：Google Fonts（Noto Serif SC / Noto Sans SC / Playfair）已改为**非阻塞**加载（preload + onload + `display=swap` + preconnect），Lighthouse 关键优化，勿回退成渲染阻塞的 `rel=stylesheet`。
+* **字体**：Google Fonts（Noto Serif SC / Noto Sans SC / Cormorant Garamond）已改为**非阻塞**加载（preload + onload + `display=swap` + preconnect），Lighthouse 关键优化，勿回退成渲染阻塞的 `rel=stylesheet`。西文/数字/丝带走 Cormorant Garamond（`--font-latin`）。
 
 * **环境变量**：`.env` 不入库（已在 .gitignore），仅提交 `.env.example`；需要 `NOTION_TOKEN`、`NOTION_DATABASE_ID`。
 
@@ -81,17 +90,59 @@
 
 
 
-* Notion 数据库当前仅 **1 篇已发布**：「新文章」（id `3e14a863-04fd-8082-80ec-dba946735575`，分类 杂文，2026-09-21，无封面）。
+* Notion 数据库当前 **4 篇已发布**：独行者、《小城与远方》、测试杂文：在便利店门口想起的事、新文章（阶段 5 构建时实测）。
 
 * 阶段 3 验证用的 12 篇测试文章（1 长文 + 11 分页）已全部归档到 Notion 回收站，可恢复。
 
-* `npm run build` 当前产出 **6 个页面**：`/`、`/about`、`/archive`、`/categories/杂文/`、`/posts/新文章/`、`/404.html`。
+* `npm run build` 当前产出 **14 个页面**：`/`、`/about`、`/archive`、3 个分类页、4 篇文章页、3 个标签页、`/404.html`。
+
+* 固定背景图 5 张入 `public/backgrounds/`（bg-clouds / bg-slope / bg-night / bg-warm / bg-stairs，均为无角色无 Logo 原画局部；`bg-clouds` 已按实测把裁剪收到源图 0.40*h 去除 OST 标题残字，见 `design/fix_clouds.py` 注释）。
 
 * 首页 HTML 约 11KB（未 gzip），远低于阶段 4「gzip 后 <50KB」要求。
 
 * 本地 `npm run preview`：4321 被占用时会自动切到 4322（排障时注意端口）。
 
-## 六、阶段 4 已完成的代码工作
+## 六、阶段 5 已完成的代码工作（视觉重设计·双世界）
+
+### 1. 主题 token 迁移（`src/styles/global.css`）
+
+* 主强调色 鎏金 → **月白 `--silver #e7e9f2`**（冷区标题/主强调）+ **琥珀 `--amber #d8a866`**（暖区/hover）；次强调 `--amber-soft`；点缀雪光青 `--ice #9fd4e2`；`--warm-panel #1c1815` / `--warm-text #e6ddd0`；玻璃/发丝线 token 全部重命名。
+* 浅色「午后」：羊皮纸底 `#e6e2d8`，`--warm-panel #f5efe2`，正文 `#332d26`；代码块深色底 + 冰青竖条**双主题统一**（DONT_DO #18 已同步更新）。
+* 全仓旧 token 引用清零（构建期 grep 验证无残留）。
+
+### 2. 固定背景三层 + 视图语义（BaseLayout / global.css）
+
+* `<body data-view="home|post|archive|default">` 切换背景：`.bg-layer`（原画局部，filter 压暗/提亮）+ `.bg-scrim`（径向+线性遮罩）+ `.bg-grain`（颗粒，`mix-blend-mode:overlay`），三者 `position:fixed; pointer-events:none`。
+* 文章页 = 馆内暖调（bg-warm + 暖褐遮罩），归档页 = 雪夜（bg-night + 夜空遮罩），其余 = 云隙光冷调（bg-clouds）。
+* 背景图 5 张入库 `public/backgrounds/`；`design/fix_clouds.py` 裁剪收到 0.40*h（实测标题位于源图 0.46*h 起，注释已说明）。
+
+### 3. 组件
+
+* **NavBar**：滚动前透明，`NavBarScroll.vue` 岛屿切 `.scrolled` 毛玻璃（`--glass-2` + blur14px + 发丝线）；品牌含琥珀四角星；链接发丝下划线（hover 琥珀 / 激活银白）；激活态构建期静态判定（零 JS）。
+* **ThemeToggle**：描边小框「午后 / 夜」，文案跟随样稿（显示切换目标）；localStorage 持久化不变。
+* **PostCard**：3px 圆角 + 银白发丝细边 + 玻璃底；hover 上浮 2px + 琥珀边框 + 极淡琥珀外发光；封面 16:9 hover 放大 1.03；无封面渲染空画框（内嵌细边 + 中央四角星）。
+* **Footer**：木楼梯背景（bg-stairs）+ 强压暗遮罩 + 中央四角星 + 致谢行 `Visual inspiration from Witch on the Holy Night (TYPE-MOON)`（不暗示官方授权）。
+* **ArchiveTimeline**：Cormorant 大字年份 + 琥珀发丝线；左侧竖线 + 45° 菱形节点（hover 转琥珀）；`.cat` 移到 global.css 通用。
+
+### 4. 页面
+
+* **index**：Hero 复刻 OST 封面（云隙光 + 银白衬线大标题 + 燕尾丝带 `WITCH ON THE HOLY NIGHT` + 竖排 SCROLL）；「最新文章」分区头（四角星 + 发丝线）；雪坡引言带（bg-slope + 日文引言 + 中文注）；分页与 PaginationSync 保留。
+* **archive**：归档头（丝带 `ARCHIVE` + 21:9 云隙画框）+ 时间线。
+* **PostLayout**：居中暖暗面板（浅色羊皮纸），21:9 题图；右侧 240px 目录结构与移动端浮层逻辑保留，只套暖调样式；正文 800px 约束不变；`PostPrevNext` 改暖调。
+* **markdown.css**：琥珀 h2（浅色转焦糖 `#8a5a24`）、blockquote 琥珀竖条+斜体、代码块深色底+冰青竖条、行内 code 琥珀底；全块样式迁移新 token。
+* **PostToc**：标题改「目 次」，琥珀高亮 + 发丝竖线，浅色高亮转焦糖。
+* 404 / about / 分类 / 标签：统一冷调玻璃，token 同步。
+* **favicon**：四角星改月白 `#e7e9f2`。
+* 字体：移除 Playfair，新增 Cormorant Garamond 500/600（preload 与 noscript 两处同步）。
+
+### 5. 验证记录（2026-09-22）
+
+* `npm run build` 通过，14 页，无控制台错误。
+* 真实浏览器（headless 视口=窗口尺寸，PNG 尺寸已验证）：1440/390/360/320 × 深色，1440/320 × 浅色，逐页截图目检无横向溢出、无裁切、token 色值抽样命中（面板 `#1c1815` 精确）。
+* 交互实测：主题切换（label 午后⇄夜 + localStorage）、导航滚动毛玻璃、移动端目录浮层（打开/点击跳转/关闭/URL hash）、控制台零报错。
+* 已知说明：`bg-slope` 街景含少量日文警示牌文字，属场景元素，交接清单已批准为上线素材。
+
+## 七、阶段 4 已完成的代码工作
 
 ### 1. Notion 图片本地化（已实现并验证）
 
@@ -114,7 +165,7 @@
 * 首页 HTML：raw 11.9KB → **gzip 4.4KB**（要求 <50KB，达标）；详情页 gzip 3.6KB。
 * 字体已非阻塞（preload + onload + swap）；图片懒加载已具备；无未使用图标（仅 favicon.svg）。
 
-## 七、仍需用户完成的部署动作（见 DEPLOY.md 逐步操作）
+## 八、仍需用户完成的部署动作（见 DEPLOY.md 逐步操作）
 
 1. GitHub 建空仓库 → `git remote add origin` + `push main`（当前无远程）。
 2. Vercel 导入仓库，配置环境变量 `NOTION_TOKEN` / `NOTION_DATABASE_ID`，Deploy。
@@ -123,7 +174,7 @@
 5. 可选：绑定域名（改两处占位）、站长平台提交 sitemap、RSS（本阶段未做）。
 6. 验证：所有页面正常、sitemap/robots 返回、Notion 改状态触发重建、微信/Twitter 分享预览、Lighthouse 桌面 ≥95/100。
 
-## 八、阶段 4 验收标准
+## 九、阶段 4 验收标准
 
 
 
@@ -137,7 +188,7 @@
 
 * Lighthouse **桌面端性能 ≥ 95、SEO = 100**（阶段 3 移动端实测：首页 96/100、详情 95/100、归档 100/100，可作基线）。
 
-## 九、注意事项汇总（红线 & 易踩坑）
+## 十、注意事项汇总（红线 & 易踩坑）
 
 
 
@@ -157,7 +208,7 @@
 
 * 新决策追加 `DECISIONS.md`，新坑追加 `DONT_DO.md`，每里程碑 git 提交。
 
-## 十、常用命令
+## 十一、常用命令
 
 
 

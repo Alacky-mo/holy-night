@@ -4,6 +4,7 @@
  * - 桌面端（>1024px）：右侧悬浮固定目录（由 PostLayout 的 aside 承载）
  * - 平板/移动端（≤1024px）：右下角「目录」悬浮按钮，点击展开浮层
  * - IntersectionObserver 滚动高亮当前章节，点击平滑滚动到锚点
+ * （阶段 5 只套样稿暖调目录样式，不重写交互逻辑）
  */
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 
@@ -77,7 +78,7 @@ onBeforeUnmount(() => {
   <div class="post-toc" v-if="headings.length > 0">
     <!-- 桌面端：内嵌侧栏 -->
     <nav class="toc-desktop" aria-label="文章目录">
-      <p class="toc-title">目录</p>
+      <p class="toc-title">目 次</p>
       <ul class="toc-list">
         <li v-for="h in headings" :key="h.id">
           <a
@@ -95,7 +96,7 @@ onBeforeUnmount(() => {
     <div class="toc-mobile">
       <transition name="toc-fade">
         <nav v-if="panelOpen" class="toc-panel" aria-label="文章目录">
-          <p class="toc-title">目录</p>
+          <p class="toc-title">目 次</p>
           <ul class="toc-list">
             <li v-for="h in headings" :key="h.id">
               <a
@@ -126,43 +127,48 @@ onBeforeUnmount(() => {
 .post-toc {
   font-family: var(--font-serif);
 }
+/* 琥珀「目 次」 + 发丝线竖条（样稿 .toc） */
 .toc-title {
   margin: 0 0 0.75rem;
-  font-size: 0.85rem;
-  letter-spacing: 0.15em;
-  color: var(--accent);
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  color: var(--amber);
+  font-weight: 500;
 }
 .toc-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-left: 1px solid var(--border);
+  border-left: 1px solid var(--hairline);
 }
 .toc-link {
   display: block;
-  padding: 0.3rem 0 0.3rem 0.85rem;
+  padding: 0.32rem 0 0.32rem 1rem;
   font-size: 0.82rem;
   line-height: 1.5;
-  color: var(--text-secondary);
+  color: var(--mist);
   text-decoration: none;
   border-left: 2px solid transparent;
   margin-left: -1px;
   transition: color 200ms ease-out, border-color 200ms ease-out;
 }
 .toc-link.level-2 {
-  padding-left: 1.5rem;
+  padding-left: 1.8rem;
 }
 .toc-link.level-3 {
-  padding-left: 2.15rem;
+  padding-left: 2.5rem;
   font-size: 0.78rem;
 }
 .toc-link:hover {
-  color: var(--accent);
+  color: var(--amber-soft);
 }
 .toc-link.active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  text-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
+  color: var(--amber-soft);
+  border-left-color: var(--amber);
+}
+html.light .toc-link:hover,
+html.light .toc-link.active {
+  color: #8a5a24;
 }
 
 /* 桌面端侧栏，移动端隐藏 */
@@ -182,18 +188,18 @@ onBeforeUnmount(() => {
   padding: 0.55rem 1rem;
   font-family: var(--font-serif);
   font-size: 0.85rem;
-  color: var(--accent);
-  background: var(--bg-card-solid);
-  border: 1px solid var(--accent);
-  border-radius: 999px;
+  color: var(--amber);
+  background: var(--glass-2);
+  border: 1px solid rgba(216, 168, 102, 0.4);
+  border-radius: 2px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
   cursor: pointer;
-  transition: color 200ms ease-out, background 200ms ease-out,
-    box-shadow 200ms ease-out;
+  transition: color 200ms ease-out, background-color 200ms ease-out,
+    box-shadow 200ms ease-out, border-color 200ms ease-out;
 }
 .toc-fab:hover {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(233, 199, 107, 0.08));
-  box-shadow: 0 0 14px rgba(212, 175, 55, 0.4);
+  background: rgba(216, 168, 102, 0.18);
+  box-shadow: 0 0 14px rgba(216, 168, 102, 0.4);
 }
 
 /* 移动端浮层：不遮挡正文，独立浮层，可滚动 */
@@ -206,9 +212,9 @@ onBeforeUnmount(() => {
   max-height: 55vh;
   overflow-y: auto;
   padding: 1rem 1.1rem;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--bg-card-solid);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 3px;
+  background: var(--glass-2);
   box-shadow: 0 10px 36px rgba(0, 0, 0, 0.45);
 }
 
