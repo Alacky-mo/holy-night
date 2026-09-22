@@ -85,6 +85,8 @@ body {
 body {
   min-height: 100vh;
   margin: 0;
+  display: flex;
+  flex-direction: column;
   background: var(--night-1);
   /* 主题切换 400ms 过渡（AGENT.md 5.4 / 阶段 2） */
   transition: background-color 400ms ease-out, color 400ms ease-out;
@@ -166,16 +168,16 @@ body[data-view='archive'] .bg-scrim {
   );
 }
 
-/* 浅色「午后」：背景提亮，遮罩转暖米白 */
+/* 浅色「午后」：背景提亮，遮罩转暖米白（保留云雾层次，避免平涂） */
 html.light .bg-layer {
-  filter: brightness(1.35) saturate(0.7) blur(1px);
+  filter: brightness(1.18) saturate(0.72) blur(1px);
 }
 html.light .bg-scrim {
   background: radial-gradient(
     120% 90% at 50% 0%,
-    rgba(232, 228, 218, 0.08) 0%,
-    rgba(232, 228, 218, 0.55) 48%,
-    rgba(230, 226, 216, 0.92) 78%,
+    rgba(232, 228, 218, 0.05) 0%,
+    rgba(232, 228, 218, 0.42) 48%,
+    rgba(230, 226, 216, 0.86) 78%,
     #e6e2d8 100%
   );
 }
@@ -200,6 +202,13 @@ nav,
 footer {
   position: relative;
   z-index: 1;
+}
+/* 短内容页（如关于）页脚沉底：body 为 flex 列，main 撑满剩余空间 */
+main {
+  flex: 1 0 auto;
+}
+footer {
+  flex-shrink: 0;
 }
 
 /* ---------- 标题一律衬线体（DONT_DO #6），月白（AGENT.md 5.2） ---------- */
@@ -390,30 +399,52 @@ a.cat:hover {
   display: none;
 }
 
-/* 雪坡引言带（首页唯一抒情段，内联背景，上下沉入底色） */
+/* 雪坡引言带（首页唯一抒情段）
+   图片层 ::before 自带上下羽化 mask，遮罩层 ::after 沉入底色，无硬边框线 */
 .band {
   position: relative;
   margin-top: 4.5rem;
   padding: 5.5rem 1.5rem;
   text-align: center;
-  background: url('/backgrounds/bg-slope.jpg') center 32% / cover no-repeat;
-  border-top: 1px solid var(--hairline);
-  border-bottom: 1px solid var(--hairline);
+  overflow: hidden;
 }
 .band::before {
+  /* 图片层：上下羽化，边缘自然融入页面底色 */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/backgrounds/bg-slope.jpg') center 32% / cover no-repeat;
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 16%,
+    #000 84%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 16%,
+    #000 84%,
+    transparent 100%
+  );
+}
+.band::after {
+  /* 遮罩层：保证文字可读，上下沉入底色 */
   content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
     var(--night-1) 0%,
-    rgba(16, 22, 42, 0.55) 30%,
-    rgba(16, 22, 42, 0.55) 70%,
+    rgba(16, 22, 42, 0.55) 24%,
+    rgba(16, 22, 42, 0.55) 76%,
     var(--night-1) 100%
   );
 }
 .band > * {
   position: relative;
+  z-index: 1;
 }
 .band-quote {
   font-family: var(--font-serif);
@@ -428,6 +459,28 @@ a.cat:hover {
   font-size: 0.9rem;
   color: var(--silver-dim);
   letter-spacing: 0.18em;
+}
+
+/* 午后：雪坡提亮，遮罩转羊皮纸，文字转深色，与亮色页面协调 */
+html.light .band::before {
+  filter: brightness(1.55) saturate(0.55);
+}
+html.light .band::after {
+  background: linear-gradient(
+    180deg,
+    #e6e2d8 0%,
+    rgba(230, 226, 216, 0.42) 24%,
+    rgba(230, 226, 216, 0.42) 76%,
+    #e6e2d8 100%
+  );
+}
+html.light .band-quote {
+  color: #2c3145;
+  text-shadow: 0 1px 14px rgba(255, 255, 255, 0.9);
+}
+html.light .band-sub {
+  color: #555b70;
+  text-shadow: 0 1px 8px rgba(255, 255, 255, 0.9);
 }
 
 /* 页面入场：淡入 + 轻微上移，300ms（阶段 3）
@@ -518,6 +571,10 @@ button,
   }
   .band {
     padding: 4rem 1rem;
+  }
+  .band-sub {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
   }
 }
 
