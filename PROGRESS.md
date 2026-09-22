@@ -46,7 +46,7 @@
 | 2 视觉  | ✅ 已完成 | `e8c7e4b` | 双主题（深色默认 / 浅色）、魔法使之夜配色、Notion 全块样式、主题切换                     |
 | 3 交互  | ✅ 已完成 | `266fee5` | 目录跟随、返回顶部、上一篇 / 下一篇、响应式、入场动效、404、空状态、favicon                |
 | 4 部署  | 🔶 代码就绪 · 待用户部署 | `fd47136` | SEO（OG/Twitter/sitemap/robots）、图片本地化、DEPLOY.md；Git 远程 / Vercel / Deploy Hook 需用户操作（见 `DEPLOY.md`） |
-| 5 重设计 | ✅ 已完成 | 见本次提交 | 「双世界」视觉重设计：月白+琥珀 token 迁移、固定背景三层、Hero/丝带/引言带、暖调文章面板、菱形归档时间轴、导航滚动毛玻璃、Cormorant 西文字体、背景图入库 `public/backgrounds/` |
+| 5 重设计 | ✅ 已完成 | `96908f3` | 「双世界」视觉重设计：月白+琥珀 token 迁移、固定背景三层、Hero/丝带/引言带、暖调文章面板、菱形归档时间轴、导航滚动毛玻璃、Cormorant 西文字体、背景图入库 `public/backgrounds/` |
 
 当前分支 `main`。
 
