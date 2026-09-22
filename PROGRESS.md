@@ -129,7 +129,7 @@
 * **index**：Hero 复刻 OST 封面（云隙光 + 银白衬线大标题 + 燕尾丝带 `WITCH ON THE HOLY NIGHT` + 竖排 SCROLL）；「最新文章」分区头（四角星 + 发丝线）；雪坡引言带（bg-slope + 日文引言 + 中文注）；分页与 PaginationSync 保留。
 * **archive**：归档头（丝带 `ARCHIVE` + 21:9 云隙画框）+ 时间线。
 * **PostLayout**：居中暖暗面板（浅色羊皮纸），21:9 题图；右侧 240px 目录结构与移动端浮层逻辑保留，只套暖调样式；正文 800px 约束不变；`PostPrevNext` 改暖调。
-* **markdown.css**：琥珀 h2（浅色转焦糖 `#8a5a24`）、blockquote 琥珀竖条+斜体、代码块深色底+冰青竖条、行内 code 琥珀底；全块样式迁移新 token。
+* **markdown.css**：琥珀 h2（浅色转焦糖 `#8a5a24`）、blockquote 琥珀竖条+斜体、代码块深色底+冰青竖条、行内 code 琥珀底；全块样式迁移新 token。注：浅色主题下 blockquote / 行内 code / 正文链接 / 目录高亮在羊皮纸面板上按可读性转焦糖（样稿此处保持 `--amber-soft` 会近不可见，属实现期微调）。
 * **PostToc**：标题改「目 次」，琥珀高亮 + 发丝竖线，浅色高亮转焦糖。
 * 404 / about / 分类 / 标签：统一冷调玻璃，token 同步。
 * **favicon**：四角星改月白 `#e7e9f2`。
