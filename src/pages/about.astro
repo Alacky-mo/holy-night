@@ -5,12 +5,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <BaseLayout title="关于 · Holy Night">
   <main class="content about-page">
     <h1>关于</h1>
-    <p class="about-placeholder">
-      这里是 Holy Night（圣夜），一个记录杂文、书评与影评的个人博客。
-      我在 Notion 里写作，构建时自动发布到这里。
+    <p class="about-text">
+      Holy Night（圣夜）是一个记录杂文、书评与影评的个人博客。文章在 Notion 中写作，构建时自动发布为静态页面。
     </p>
-    <p class="about-placeholder">
-      这是阶段 1 的占位自我介绍，正式内容将在后续替换。
+    <p class="about-text">
+      这里的主人是一个普通读者与影迷，偶尔也写点杂文。习惯在夜里读书、看电影，再把一些零碎的想法整理成文字。
+    </p>
+    <p class="about-text">
+      「圣夜」之名取自《魔法使之夜》（Witch on the Holy Night）——一个关于坡道、魔女与日常的故事。本站的视觉灵感亦来源于此，特此致谢。
     </p>
   </main>
 </BaseLayout>
@@ -19,8 +21,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .about-page {
     max-width: 720px;
   }
-  .about-placeholder {
-    color: var(--mist);
+  .about-text {
+    color: var(--silver-dim);
     line-height: 1.9;
   }
 </style>
