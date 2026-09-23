@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import PostToc from '../components/vue/PostToc.vue';
+import AliceCompanion from '../components/vue/AliceCompanion.vue';
 import PostPrevNext from '../components/astro/PostPrevNext.astro';
 import type { PostMeta } from '../lib/notion';
 import type { TocItem } from '../lib/notion-render';
@@ -79,6 +80,8 @@ const { post, readingTime, headings, prev, next } = Astro.props;
       )}
     </div>
   </main>
+  <!-- 画框陪读仅文章页挂载；与 main 同级，直挂 body（fixed 祖先无 transform，DONT_DO #24） -->
+  <AliceCompanion client:load />
 </BaseLayout>
 
 <style>

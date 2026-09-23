@@ -125,7 +125,7 @@ holy-night/
 - 内容区：最大宽度 1200px，居中，两侧留白；文章正文单列 800px
 - 代码块：双主题统一深色底 + 雪光青（`#9fd4e2`）左竖条
 - 动效：过渡 200–400ms，`ease-out`，只过渡具体属性，无循环动画，克制优雅；支持 `prefers-reduced-motion`
-- 画框陪读小窗（AliceCompanion 岛屿）：右下角玻璃画框，默认静态原画，hover/focus/点击播放微动；桌面位于 BackToTop 上方，≤1024px 移左下角，可关闭（localStorage 记忆）
+- 画框陪读小窗（AliceCompanion 岛屿，仅文章页 PostLayout 挂载）：CG 四边透明羽化、无实体框，默认静态原画，hover/focus/点击播放微动；桌面右下角 BackToTop 上方（176px），≤1024 移左下角（140/120px）；右上角有珠头像为开合开关，收起状态 localStorage 记忆
 
 ## 六、Notion 内容模型
 

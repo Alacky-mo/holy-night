@@ -1,84 +1,118 @@
 <script setup lang="ts">
 /**
- * 画框陪读小窗（Vue 3，client:load 全局挂载）
- * 默认完全静止的读书 CG；hover / 键盘聚焦由 CSS 淡入微动 WebP，
- * 触屏设备点击切换播放；交互结束回到静止。可关闭，状态记 localStorage。
+ * 画框陪读小窗（Vue 3，client:load，仅文章页挂载）
+ * CG 无实体画框，四边透明羽化融入页面；默认完全静止，
+ * hover / 键盘聚焦 / 触屏点击才淡入微动 WebP。
+ * 右上角有珠头像为开合开关，收起后仅余头像；状态记 localStorage。
  */
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 
-const STORAGE_KEY = 'alice-companion-dismissed';
+const COLLAPSE_KEY = 'alice-companion-collapsed';
+const LEGACY_KEY = 'alice-companion-dismissed';
 
-const dismissed = ref(false);
+/**
+ * 初始开合状态必须在 setup 首次渲染时确定：
+ * v-show 的初始值在 hydration 时直接生效，避免 onMounted
+ * 再翻转导致 Transition 不执行、舞台关不掉。
+ * SSG 阶段无 window，返回 false（服务端初始 HTML 为展开）。
+ */
+function readCollapsed(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    // 一次性迁移旧版「永久关闭」标记
+    if (window.localStorage.getItem(LEGACY_KEY) === '1') {
+      window.localStorage.setItem(COLLAPSE_KEY, '1');
+      window.localStorage.removeItem(LEGACY_KEY);
+    }
+    return window.localStorage.getItem(COLLAPSE_KEY) === '1';
+  } catch {
+    /* 隐私模式等 localStorage 不可用场景：默认展开 */
+    return false;
+  }
+}
+
+const collapsed = ref(readCollapsed());
 const playing = ref(false);
 
-onMounted(() => {
+function toggleCollapsed(): void {
+  const next = !collapsed.value;
+  collapsed.value = next;
+  if (next) playing.value = false;
   try {
-    if (window.localStorage.getItem(STORAGE_KEY) === '1') {
-      dismissed.value = true;
+    if (next) {
+      window.localStorage.setItem(COLLAPSE_KEY, '1');
+    } else {
+      window.localStorage.removeItem(COLLAPSE_KEY);
     }
   } catch {
-    /* 隐私模式等 localStorage 不可用场景：静默保持默认显示 */
+    /* 静默：即使未写入记忆，本次开合仍然生效 */
   }
-});
+}
 
 function togglePlay(): void {
   // 减少动效偏好下永不播放（live 图同时被 CSS 直接隐藏）
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  // 桌面端的播放由 hover / focus 的 CSS 负责，点击不反应；仅触屏设备点击切换
+  // 桌面端播放由 hover / focus 的 CSS 负责，点击不反应；仅触屏设备点击切换
   if (!window.matchMedia('(hover: none)').matches) return;
   playing.value = !playing.value;
-}
-
-function dismiss(): void {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, '1');
-  } catch {
-    /* 静默：即使未写入记忆，本次收起仍然生效 */
-  }
-  dismissed.value = true;
 }
 </script>
 
 <template>
-  <aside v-if="!dismissed" class="alice-companion" aria-label="读书的有珠，装饰性小窗">
-    <div
-      class="alice-frame"
-      :class="{ playing }"
-      tabindex="0"
-      role="img"
-      @click="togglePlay"
-    >
-      <img
-        class="alice-img alice-idle"
-        src="/characters/alice/alice-reading-idle.png"
-        alt=""
-        aria-hidden="true"
-        width="640"
-        height="567"
-      />
-      <img
-        class="alice-img alice-live"
-        src="/characters/alice/alice-reading-live.webp"
-        alt=""
-        aria-hidden="true"
-        width="640"
-        height="567"
-      />
-      <!-- 边缘过渡层：暗角 + 底边沉色，消除 CG 硬边 -->
-      <span class="alice-vignette" aria-hidden="true"></span>
-      <span class="alice-caption">Quiet reading</span>
+  <aside class="alice-companion" aria-label="读书的有珠，装饰性小窗">
+    <!-- 开合状态用 data 属性承载：Vue 岛屿 hydration 时 class 补丁不可靠，
+         data-* 属性能被正确补丁（见收起态 CSS 选择器） -->
+    <div class="alice-inner" :data-collapsed="collapsed ? '1' : '0'">
+      <Transition name="alice-fade">
+        <div
+          v-show="!collapsed"
+          class="alice-stage"
+          :class="{ playing }"
+          tabindex="0"
+          role="img"
+          @click="togglePlay"
+        >
+          <img
+            class="alice-img alice-idle"
+            src="/characters/alice/alice-reading-idle.png"
+            alt=""
+            aria-hidden="true"
+            width="640"
+            height="567"
+          />
+          <img
+            class="alice-img alice-live"
+            src="/characters/alice/alice-reading-live.webp"
+            alt=""
+            aria-hidden="true"
+            width="640"
+            height="567"
+          />
+        </div>
+      </Transition>
+      <button
+        type="button"
+        class="alice-avatar-btn"
+        :aria-label="collapsed ? '显示读书小窗' : '收起读书小窗'"
+        @click="toggleCollapsed"
+      >
+        <img
+          src="/characters/alice/alice-avatar.png"
+          alt=""
+          aria-hidden="true"
+          width="72"
+          height="72"
+        />
+      </button>
     </div>
-    <button type="button" class="alice-close" aria-label="收起小窗" @click="dismiss">
-      ×
-    </button>
   </aside>
 </template>
 
 <style scoped>
 .alice-companion {
   position: fixed;
-  right: 1.25rem;
-  bottom: 5rem; /* 桌面：BackToTop(bottom1.25 + 高2.6) 的上方 */
+  right: 1rem;
+  bottom: 6.5rem; /* 桌面：收起态头像位于 BackToTop 上方 */
   z-index: 25;
   animation: alice-in 350ms ease-out; /* 无 fill-mode，符合 DONT_DO #23 */
 }
@@ -94,148 +128,131 @@ function dismiss(): void {
   }
 }
 
-.alice-frame {
+.alice-inner {
   position: relative;
-  width: 300px;
-  padding: 9px;
-  border-radius: 6px;
-  background: var(--glass-2);
-  border: 1px solid var(--hairline-strong);
-  backdrop-filter: blur(10px);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.42),
-    inset 0 1px 0 var(--hairline);
+}
+
+/* CG 舞台：无实体框，四边 mask 羽化 */
+.alice-stage {
+  position: relative;
+  width: 176px;
   cursor: pointer;
   outline: none;
-  transition: border-color 300ms ease-out, box-shadow 300ms ease-out;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 12%, #000 84%, transparent 100%);
+  mask-image:
+    linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 12%, #000 84%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
 }
 
-.alice-frame:hover,
-.alice-frame:focus-visible {
-  border-color: var(--amber);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.42),
-    0 0 16px rgba(216, 168, 102, 0.16),
-    inset 0 1px 0 var(--hairline);
+/* 降级：不支持遮罩交集时，用单层椭圆羽化 */
+@supports not ((mask-composite: intersect) or (-webkit-mask-composite: source-in)) {
+  .alice-stage {
+    -webkit-mask-image: radial-gradient(
+      ellipse 80% 76% at 50% 48%,
+      #000 56%,
+      transparent 94%
+    );
+    mask-image: radial-gradient(ellipse 80% 76% at 50% 48%, #000 56%, transparent 94%);
+  }
 }
 
-/* CG 画面区：两图同尺寸绝对叠放 */
+/* 开合淡入淡出 */
+.alice-fade-enter-active,
+.alice-fade-leave-active {
+  transition: opacity 250ms ease-out;
+}
+.alice-fade-enter-from,
+.alice-fade-leave-to {
+  opacity: 0;
+}
+
+/* 两图同尺寸叠放；live 默认隐藏，交互时淡入 */
 .alice-img {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 3px;
 }
-
 .alice-live {
   position: absolute;
-  inset: 9px; /* 与 padding 对齐 */
-  width: calc(100% - 18px);
+  inset: 0;
+  width: 100%;
   opacity: 0;
   transition: opacity 350ms ease-out;
 }
-
-.alice-frame:hover .alice-live,
-.alice-frame:focus-within .alice-live,
-.alice-frame.playing .alice-live {
+.alice-stage:hover .alice-live,
+.alice-stage:focus-within .alice-live,
+.alice-stage.playing .alice-live {
   opacity: 1;
 }
 
-/* ① 暗角：CG 四边沉入画框，消除硬边 */
-.alice-vignette {
+/* 头像开合开关：位于舞台右上角，略压边缘 */
+.alice-avatar-btn {
   position: absolute;
-  inset: 9px;
-  border-radius: 3px;
-  pointer-events: none;
-  box-shadow: inset 0 0 26px 10px rgba(10, 14, 28, 0.52);
-}
-
-/* ② 底边沉色：沙发下缘渐变进玻璃底色 */
-.alice-frame::after {
-  content: '';
-  position: absolute;
-  left: 9px;
-  right: 9px;
-  bottom: 9px;
-  height: 42px;
-  border-radius: 0 0 3px 3px;
-  background: linear-gradient(transparent, rgba(22, 28, 48, 0.78));
-  pointer-events: none;
-}
-
-.alice-caption {
-  position: absolute;
-  bottom: 16px;
-  left: 18px;
-  font-family: var(--font-latin);
-  font-style: italic;
-  font-size: 11px;
-  color: var(--mist);
-  letter-spacing: 0.04em;
-  pointer-events: none;
-  transition: color 300ms ease-out;
-}
-
-.alice-frame:hover .alice-caption {
-  color: var(--amber-soft);
-}
-
-.alice-close {
-  position: absolute;
-  top: -9px;
-  right: -7px;
-  width: 20px;
-  height: 20px;
+  top: -12px;
+  right: -12px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   border-radius: 50%;
-  font-size: 13px;
-  line-height: 1;
-  color: var(--mist);
+  overflow: hidden;
   background: var(--glass-2);
   border: 1px solid var(--hairline-strong);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
   cursor: pointer;
-  transition: color 200ms ease-out, border-color 200ms ease-out;
+  transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
+}
+.alice-avatar-btn img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.alice-avatar-btn:hover,
+.alice-avatar-btn:focus-visible {
+  border-color: var(--amber);
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.35),
+    0 0 12px rgba(216, 168, 102, 0.28);
+  outline: none;
 }
 
-.alice-close:hover {
-  color: var(--silver);
-  border-color: var(--silver);
+/* 收起态：舞台隐藏，头像锚定角落锚点
+   用 data-collapsed 属性而非 class：Vue 岛屿 hydration 时 class 补丁不可靠 */
+.alice-inner[data-collapsed='1'] .alice-avatar-btn {
+  top: 0;
+  right: 0;
 }
 
-/* 浅色主题：覆盖两处过渡色，边界同样自然 */
-html.light .alice-vignette {
-  box-shadow: inset 0 0 26px 10px rgba(90, 70, 45, 0.26);
-}
-
-html.light .alice-frame::after {
-  background: linear-gradient(transparent, rgba(248, 244, 235, 0.82));
-}
-
-/* 响应式避让：≤1024px 移到左下角，避开右下角目录按钮与 BackToTop */
+/* 响应式：≤1024 移到左下角，避开右下角目录按钮与 BackToTop */
 @media (max-width: 1024px) {
   .alice-companion {
     right: auto;
-    left: 1.25rem;
-    bottom: 1.25rem;
+    left: 1rem;
+    bottom: 1rem;
   }
-  .alice-frame {
-    width: 232px;
+  .alice-stage {
+    width: 140px;
+  }
+  .alice-inner[data-collapsed='1'] .alice-avatar-btn {
+    top: 0;
+    right: auto;
+    left: 0;
   }
 }
 
 @media (max-width: 380px) {
-  .alice-frame {
-    width: 196px;
-    padding: 7px;
+  .alice-stage {
+    width: 120px;
   }
-  .alice-live,
-  .alice-vignette {
-    inset: 7px;
-    width: calc(100% - 14px);
-  }
-  .alice-frame::after {
-    left: 7px;
-    right: 7px;
-    bottom: 7px;
+  .alice-avatar-btn {
+    width: 30px;
+    height: 30px;
+    top: -10px;
+    right: -10px;
   }
 }
 
@@ -246,6 +263,10 @@ html.light .alice-frame::after {
   }
   .alice-live {
     display: none;
+  }
+  .alice-fade-enter-active,
+  .alice-fade-leave-active {
+    transition: none;
   }
 }
 </style>
